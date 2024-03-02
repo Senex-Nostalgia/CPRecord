@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/css" href="../additional_files/css/pgmain.min.css"?>
+<?xml-stylesheet type="text/css" href="../additional_files/css/sh_typical.min.css"?>
+
+<template>
+<title>根据后缀自动机构造后缀树</title>
+<pre class="sh_sourceCode"><code class="sh_cpp"><span class="sh_type">void</span> <span class="sh_function">build</span><span class="sh_symbol">()</span> <span class="sh_cbracket">{</span>
+	<span class="sh_type">int</span> i<span class="sh_symbol">,</span> j<span class="sh_symbol">,</span> c<span class="sh_symbol">;</span> used<span class="sh_symbol">[</span><span class="sh_number">1</span><span class="sh_symbol">]</span> <span class="sh_symbol">=</span> <span class="sh_keyword">true</span><span class="sh_symbol">;</span>
+	<span class="sh_keyword">for</span> <span class="sh_symbol">(</span>i <span class="sh_symbol">=</span> cnt<span class="sh_symbol">;</span> i<span class="sh_symbol">;</span> <span class="sh_symbol">--</span>i<span class="sh_symbol">)</span> <span class="sh_keyword">if</span> <span class="sh_symbol">(~</span>pos<span class="sh_symbol">[</span>i<span class="sh_symbol">])</span>
+		<span class="sh_keyword">for</span> <span class="sh_symbol">(</span>j <span class="sh_symbol">=</span> i<span class="sh_symbol">;</span> <span class="sh_symbol">!</span>used<span class="sh_symbol">[</span>j<span class="sh_symbol">];</span> j <span class="sh_symbol">=</span> pa<span class="sh_symbol">[</span>j<span class="sh_symbol">])</span>
+			c <span class="sh_symbol">=</span> pos<span class="sh_symbol">[</span>j<span class="sh_symbol">]</span> <span class="sh_symbol">-</span> val<span class="sh_symbol">[</span>pa<span class="sh_symbol">[</span>j<span class="sh_symbol">]],</span> pos<span class="sh_symbol">[</span>pa<span class="sh_symbol">[</span>j<span class="sh_symbol">]]</span> <span class="sh_symbol">=</span> pos<span class="sh_symbol">[</span>j<span class="sh_symbol">],</span>
+			child<span class="sh_symbol">[</span>pa<span class="sh_symbol">[</span>j<span class="sh_symbol">]][</span><span class="sh_type">int</span><span class="sh_symbol">(</span>s<span class="sh_symbol">[</span>c<span class="sh_symbol">])]</span> <span class="sh_symbol">=</span> j<span class="sh_symbol">,</span> used<span class="sh_symbol">[</span>j<span class="sh_symbol">]</span> <span class="sh_symbol">=</span> <span class="sh_keyword">true</span><span class="sh_symbol">;</span>
+<span class="sh_comment">//	dfs(1);</span>
+<span class="sh_cbracket">}</span></code></pre>
+</template>

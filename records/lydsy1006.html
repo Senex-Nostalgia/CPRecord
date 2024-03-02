@@ -1,0 +1,76 @@
+<link type="text/css" rel="stylesheet" href="../additional_files/css/bootstrap.min.css">
+<link type="text/css" rel="stylesheet" href="../additional_files/css/sh_typical.min.css">
+<script type="text/x-mathjax-config">MathJax.Hub.Config({tex2jax: {inlineMath: [['$', '$']], displayMath: [['$$', '$$']]}});</script>
+<script type="text/javascript" src="../additional_files/MathJax-master/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+<h3>题目描述</h3>
+<p>K 国是一个热衷三角形的国度，连人的交往也只喜欢三角原则。她们认为三角关系：即 AB 相互认识，BC 相互认识，CA 相互认识，是简洁高效的。</p>
+<p>为了巩固三角关系，K 国禁止四边关系，五边关系等等的存在。所谓 $n$ 边关系，是指 $n$ 个人 $A_1, A_2, \cdots, A_n$ 之间仅存在 $n$ 对认识关系：$(A_1, A_2), (A_2, A_3), \cdots, (A_n, A_1)$，而没有其它认识关系。</p>
+<p>比如四边关系指 ABCD 四个人 AB、BC、CD、DA 相互认识，而 AC、BD 不认识。全民比赛时，为了防止作弊，规定任意一对相互认识的人不得在一队，国王想知道，最少可以分多少支队。</p>
+
+<h3>输入格式</h3>
+<p>第一行包含两个正整数 $n, m$ ($n \leq 10000, m \leq 10^6$)。表示有 $n$ 个人，$m$ 对认识关系。</p>
+<p>接下来 $m$ 行，每行包含两个整数，表示一对相互认识的人。</p>
+
+<h3>输出格式</h3>
+<p>输出一行一个整数，表示最少可以分多少支队。</p>
+
+<h3>题解</h3>
+<p>参见便笺 "<a href="../memos/15.html" target="_blank">弦图相关</a>"。</p>
+
+<h3>代码</h3>
+
+<div class="panel-body"><pre class="sh_sourceCode"><code class="sh_cpp"><span class="sh_preproc">#include</span> <span class="sh_string">&lt;bits/stdc++.h&gt;</span>
+<span class="sh_preproc">#include</span> <span class="sh_string">&lt;ext/pb_ds/priority_queue.hpp&gt;</span>
+<span class="sh_preproc">#define</span> maxV <span class="sh_number">10034</span>
+<span class="sh_preproc">#define</span> maxE <span class="sh_number">2048808</span>
+<span class="sh_keyword">using</span> __gnu_pbds<span class="sh_symbol">::</span>priority_queue<span class="sh_symbol">;</span>
+
+<span class="sh_keyword">struct</span><span class="sh_normal"> </span><span class="sh_classname">_</span><span class="sh_cbracket">{</span>
+    <span class="sh_type">int</span> id<span class="sh_symbol">,</span> val<span class="sh_symbol">;</span>
+    <span class="sh_function">_</span> <span class="sh_symbol">(</span><span class="sh_type">int</span> id0 <span class="sh_symbol">=</span> <span class="sh_number">0</span><span class="sh_symbol">,</span> <span class="sh_type">int</span> value <span class="sh_symbol">=</span> <span class="sh_number">0</span><span class="sh_symbol">):</span> <span class="sh_function">id</span><span class="sh_symbol">(</span>id0<span class="sh_symbol">),</span> <span class="sh_function">val</span><span class="sh_symbol">(</span>value<span class="sh_symbol">)</span> <span class="sh_cbracket">{}</span>
+    <span class="sh_type">bool</span> <span class="sh_keyword">operator</span> <span class="sh_symbol">&lt;</span> <span class="sh_symbol">(</span><span class="sh_keyword">const</span> _ <span class="sh_symbol">&amp;</span>b<span class="sh_symbol">)</span> <span class="sh_keyword">const</span> <span class="sh_cbracket">{</span><span class="sh_keyword">return</span> val <span class="sh_symbol">&lt;</span> b<span class="sh_symbol">.</span>val<span class="sh_symbol">;</span><span class="sh_cbracket">}</span>
+<span class="sh_cbracket">}</span><span class="sh_symbol">;</span>
+
+<span class="sh_keyword">typedef</span> priority_queue <span class="sh_symbol">&lt;</span>_<span class="sh_symbol">&gt;</span> prio_queue<span class="sh_symbol">;</span>
+
+<span class="sh_type">int</span> V<span class="sh_symbol">,</span> E<span class="sh_symbol">;</span>
+<span class="sh_type">int</span> u<span class="sh_symbol">,</span> v<span class="sh_symbol">,</span> i<span class="sh_symbol">,</span> g<span class="sh_symbol">,</span> ans<span class="sh_symbol">;</span>
+
+<span class="sh_type">int</span> to<span class="sh_symbol">[</span>maxE<span class="sh_symbol">],</span> first<span class="sh_symbol">[</span>maxV<span class="sh_symbol">],</span> next<span class="sh_symbol">[</span>maxE<span class="sh_symbol">];</span>
+
+_ t<span class="sh_symbol">;</span>
+<span class="sh_type">bool</span> used<span class="sh_symbol">[</span>maxV<span class="sh_symbol">];</span>
+<span class="sh_usertype">prio_queue</span><span class="sh_normal"> </span>pq<span class="sh_symbol">;</span>
+prio_queue<span class="sh_symbol">::</span><span class="sh_usertype">point_iterator</span><span class="sh_normal"> </span>it<span class="sh_symbol">[</span>maxV<span class="sh_symbol">];</span>
+
+<span class="sh_keyword">inline</span> <span class="sh_type">void</span> <span class="sh_function">addedge</span><span class="sh_symbol">(</span><span class="sh_type">int</span> u<span class="sh_symbol">,</span> <span class="sh_type">int</span> v<span class="sh_symbol">,</span> <span class="sh_type">int</span> id<span class="sh_symbol">)</span> <span class="sh_cbracket">{</span>to<span class="sh_symbol">[</span>id<span class="sh_symbol">]</span> <span class="sh_symbol">=</span> v<span class="sh_symbol">;</span> next<span class="sh_symbol">[</span>id<span class="sh_symbol">]</span> <span class="sh_symbol">=</span> first<span class="sh_symbol">[</span>u<span class="sh_symbol">];</span> first<span class="sh_symbol">[</span>u<span class="sh_symbol">]</span> <span class="sh_symbol">=</span> id<span class="sh_symbol">;</span><span class="sh_cbracket">}</span>
+
+<span class="sh_keyword">inline</span> <span class="sh_type">void</span> <span class="sh_function">up</span><span class="sh_symbol">(</span><span class="sh_type">int</span> <span class="sh_symbol">&amp;</span>x<span class="sh_symbol">,</span> <span class="sh_keyword">const</span> <span class="sh_type">int</span> y<span class="sh_symbol">)</span> <span class="sh_cbracket">{</span>x <span class="sh_symbol">&lt;</span> y <span class="sh_symbol">?</span> x <span class="sh_symbol">=</span> y <span class="sh_symbol">:</span> <span class="sh_number">0</span><span class="sh_symbol">;</span><span class="sh_cbracket">}</span>
+
+<span class="sh_type">int</span> <span class="sh_function">main</span><span class="sh_symbol">()</span><span class="sh_cbracket">{</span>
+    <span class="sh_function">scanf</span><span class="sh_symbol">(</span><span class="sh_string">"%d%d"</span><span class="sh_symbol">,</span> <span class="sh_symbol">&amp;</span>V<span class="sh_symbol">,</span> <span class="sh_symbol">&amp;</span>E<span class="sh_symbol">);</span>
+    <span class="sh_keyword">for</span><span class="sh_symbol">(</span>i <span class="sh_symbol">=</span> <span class="sh_number">0</span><span class="sh_symbol">;</span> i <span class="sh_symbol">&lt;</span> E<span class="sh_symbol">;</span> <span class="sh_symbol">)</span><span class="sh_cbracket">{</span>
+        <span class="sh_function">scanf</span><span class="sh_symbol">(</span><span class="sh_string">"%d%d"</span><span class="sh_symbol">,</span> <span class="sh_symbol">&amp;</span>u<span class="sh_symbol">,</span> <span class="sh_symbol">&amp;</span>v<span class="sh_symbol">);</span>
+        <span class="sh_function">addedge</span><span class="sh_symbol">(</span>u<span class="sh_symbol">,</span> v<span class="sh_symbol">,</span> i <span class="sh_symbol">&lt;&lt;</span> <span class="sh_number">1</span> <span class="sh_symbol">|</span> <span class="sh_number">1</span><span class="sh_symbol">);</span>
+        <span class="sh_function">addedge</span><span class="sh_symbol">(</span>v<span class="sh_symbol">,</span> u<span class="sh_symbol">,</span> <span class="sh_symbol">++</span>i <span class="sh_symbol">&lt;&lt;</span> <span class="sh_number">1</span><span class="sh_symbol">);</span>
+    <span class="sh_cbracket">}</span>
+    <span class="sh_keyword">for</span><span class="sh_symbol">(</span>i <span class="sh_symbol">=</span> <span class="sh_number">1</span><span class="sh_symbol">;</span> i <span class="sh_symbol">&lt;=</span> V<span class="sh_symbol">;</span> <span class="sh_symbol">++</span>i<span class="sh_symbol">)</span> <span class="sh_cbracket">{</span>t <span class="sh_symbol">=</span> <span class="sh_function">_</span><span class="sh_symbol">(</span><span class="sh_number">1</span><span class="sh_symbol">,</span> <span class="sh_number">0</span><span class="sh_symbol">);</span> it<span class="sh_symbol">[</span>i<span class="sh_symbol">]</span> <span class="sh_symbol">=</span> pq<span class="sh_symbol">.</span><span class="sh_function">push</span><span class="sh_symbol">(</span>t<span class="sh_symbol">);</span><span class="sh_cbracket">}</span>
+    <span class="sh_keyword">for</span><span class="sh_symbol">(;</span> <span class="sh_symbol">!</span>pq<span class="sh_symbol">.</span><span class="sh_function">empty</span><span class="sh_symbol">();</span> <span class="sh_symbol">)</span><span class="sh_cbracket">{</span>
+        t <span class="sh_symbol">=</span> pq<span class="sh_symbol">.</span><span class="sh_function">top</span><span class="sh_symbol">();</span> pq<span class="sh_symbol">.</span><span class="sh_function">pop</span><span class="sh_symbol">();</span>
+        v <span class="sh_symbol">=</span> t<span class="sh_symbol">.</span>id<span class="sh_symbol">;</span>
+        used<span class="sh_symbol">[</span>v<span class="sh_symbol">]</span> <span class="sh_symbol">=</span> <span class="sh_keyword">true</span><span class="sh_symbol">;</span>
+        <span class="sh_keyword">for</span><span class="sh_symbol">(</span>i <span class="sh_symbol">=</span> first<span class="sh_symbol">[</span>v<span class="sh_symbol">];</span> i<span class="sh_symbol">;</span> i <span class="sh_symbol">=</span> next<span class="sh_symbol">[</span>i<span class="sh_symbol">])</span>
+            <span class="sh_keyword">if</span><span class="sh_symbol">(!</span>used<span class="sh_symbol">[</span>u <span class="sh_symbol">=</span> to<span class="sh_symbol">[</span>i<span class="sh_symbol">]])</span><span class="sh_cbracket">{</span>
+                <span class="sh_function">up</span><span class="sh_symbol">(</span>ans<span class="sh_symbol">,</span> g <span class="sh_symbol">=</span> it<span class="sh_symbol">[</span>u<span class="sh_symbol">]-&gt;</span>val <span class="sh_symbol">+</span> <span class="sh_number">1</span><span class="sh_symbol">);</span>
+                pq<span class="sh_symbol">.</span><span class="sh_function">modify</span><span class="sh_symbol">(</span>it<span class="sh_symbol">[</span>u<span class="sh_symbol">],</span> <span class="sh_function">_</span><span class="sh_symbol">(</span>u<span class="sh_symbol">,</span> g<span class="sh_symbol">));</span>
+            <span class="sh_cbracket">}</span>
+    <span class="sh_cbracket">}</span>
+    <span class="sh_function">printf</span><span class="sh_symbol">(</span><span class="sh_string">"%d</span><span class="sh_specialchar">\n</span><span class="sh_string">"</span><span class="sh_symbol">,</span> <span class="sh_symbol">++</span>ans<span class="sh_symbol">);</span>
+    <span class="sh_keyword">return</span> <span class="sh_number">0</span><span class="sh_symbol">;</span>
+<span class="sh_cbracket">}</span>
+
+</code></pre></div>
+
+<h3>坑</h3>
+<p><strong>坑1：</strong><del>根据套路</del>，区间最值这玩意儿显然是用堆维护 (如果只维护一个点邻接的最大值，那么算法是错误的)，建议使用 <code>__gnu_pbds:priority_queue</code>，支持 <code>modify()</code> 操作，可以较好支持将 $l_i$ 增加 $1$ 的操作，通过避免多余的堆中元素，将 $O(n \log m)$ 降到 $O(n \log n)$。</p>

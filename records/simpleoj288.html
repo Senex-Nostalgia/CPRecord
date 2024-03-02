@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<link type="text/css" rel="stylesheet" href="../additional_files/css/bootstrap.min.css">
+		<link type="text/css" rel="stylesheet" href="../additional_files/css/sh_typical.min.css">
+		<title>[SimpleOJ288]掘地求升</title>
+		<script type="text/x-mathjax-config">MathJax.Hub.Config({tex2jax: {inlineMath: [['$', '$']], displayMath: [['$$', '$$']]}});</script>
+		<script type="text/javascript" src="../additional_files/js/sh_main.min.js"></script>
+		<script type="text/javascript" src="../additional_files/MathJax-master/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+	</head>
+	<body>
+		<h3>题目描述</h3>
+		<p><del>你在 ois 手机应用商店 pap sotre 下载了一款名为 "掘地求升" 的游戏。</del></p>
+		<p>游戏的地图可以抽象为下底面周长为 $n$ ($n &gt; 1$)，高度为 $m$ ($m &gt; 1$) 的<strong>圆柱体</strong>。你要在圆柱的外表面上努力攀登。</p>
+		<p>圆柱体的外表面被分成 $n \times m$ 个方格 ，每个方格上有一些金币，按照自下而上，从上看逆时针的方向给出每个位置上金币的个数 ($A_{i, j}$)。</p>
+		<p><strong>你可以任意选择第一行的某个格子作为起点</strong>，而每一步可以选择向上、左上或右上攀登一步，到达第 $m$ 层时游戏结束。假设你每一步获得金币数量的积为 $X$。</p>
+		<p>同时，这个圆柱体还是一个好看的圆柱体。圆柱体的每一列被涂成了红 ($\tt r$) ，蓝 ($\tt b$)，白 ($\tt w$) 三种颜色之一。</p>
+		<p>在你进行游戏时有两个奖励参数 $a, b$，<strong>初始值为 $1$</strong>。每当你经过一个红色的格子 (即这个格子所在的列被涂成了红色)，$a$ 的值增加 $1$；每当你经过一个蓝色的格子，$b$ 的值增加 $1$。</p>
+		<p>为了鼓励玩家打出高 ping 的操作，游戏的奖励值还与 Combo 有关。Combo 指的是所有极长相同连续操作长度的乘积，具体地说：</p>
+		<ul>
+		<li><p>用 $\texttt{U, L, R}$ 分别表示向上、左上、右上攀登一步的操作，按照操作顺序我们可以得到一个字符串 (如果我们的操作是：上、上、左上、右上、右上、右上、左上，那么对应的字符串就是 $\texttt{UULRRRL}$)。</p></li>
+		<li><p>将得到的字符串求出所有极长子串的长度 (如 $\texttt{UULRRRL}$ 就是 $(2,1,3,1)$)。</p></li>
+		<li><p>那么 Combo 的值就是这些长度的乘积 ($\texttt{UULRRRL}$ 的 Combo 就是 $2 \times 1 \times 3 \times 1 = 6$)。</p></li>
+		</ul>
+		<p>一局游戏结束后，你的得分就是 $X \times a \times b \times \mathrm{Combo}$。你并不知道怎么玩才能得到最高的分数，因此你决定每一步随机选择三个方向中的一个，那么最后你得到的分数的期望是多少呢？你只需要输出答案 $\times n \times 3^{m-1}$ 对 $998244353$ 取模后的值。</p>
+
+		<h3>输入格式</h3>
+		<p>第一行包含两个正整数 $n, m$ ($n, m \leq 2000$)，表示圆柱体的周长和高。</p>
+		<p>第二行一个长度为 $n$ 的字符串，表示每一列被涂成的颜色。保证仅由 $\texttt{r, b, w}$ 组成。</p>
+		<p>接下来 $m$ 行，每行 $n$ 个正整数 $A_{i, j}$ ($A_{i, j} \leq 10^9$)，第 $i$ 行第 $j$ 列表示从下往上第 $i$ 行，从上方看逆时针的第 $j$ 个格子中的金币个数。</p>
+
+		<h3>输出格式</h3>
+		<p>输出一行一个整数，表示得分期望 $\times n \times 3^{m-1}$ 对 $998244353$ 取模后的值。</p>
+
+		<h3>题解</h3>
+		<p>首先能够注意到，得分期望 $\times n \times 3^{m-1}$ 就是所有方案得分的和。</p>
+		<p>考虑最暴力的 DP，状态中枚举高度 ($y$ 坐标)，水平位置 ($x$ 坐标)，当前方向，当前 $\mathrm{Combo}$，红点数和蓝点数。这样状态数是 $O(n^5)$ 的 (且基本是满状态的)，显然不能接受。我们考虑如何压缩状态。</p>
+		<p>先考虑优化 $\mathrm{Combo}$，如果最终得分不乘 $\mathrm{Combo}$，那么我们当然可以优化掉这一维。然而最终得分要乘以 $\mathrm{Combo}$，而我们显然不能枚举 $\mathrm{Combo}$ 的长度，此时我们可以换一个思维：</p>
+		<p>假设有一段长度为 $l$ 的极长相同连续操作，我们可以在这 $l$ 次操作中选择一次使用<del>膜</del><strong>魔法</strong> <del>(比如加速？)</del>，那么就转化成 $l$ 条<strong>本质不同</strong>的操作了。我们只需要记录在当前的 $\mathrm{Combo}$ 中是否使用<del>膜</del>魔法即可，状态变成了两个。</p>
+		<p>那么优化红点数 (蓝点数) 也是类似的。假如整个过程中经过了 $r$ 个红点，那么 $a = r + 1$。我们可以选择一个红点对这个红点施加<del>膜</del>魔法 <del>(比如将它变成黄点？)</del>，这样就转化成了 $r$ 条<strong>本质不同</strong>的操作了。但是这个 $+ 1$ 该怎么办呢？其实不难，我们<strong>允许</strong>不对任何一个红点使用<del>膜</del>魔法，这样<strong>本质不同</strong>的操作数就变成了 $r + 1$。</p>
+		<p>那么最终的状态就呼之欲出了。我们令 $f_{i, j, k, c, r, b}$ 表示当前在 $(y=i, x=j)$ 的位置，上一步 (即爬到这里的那步) 的方向为 $k$ ($k \in {\texttt L, \texttt U, \texttt R}$)，当前是否使用加速魔法 (使用即为 $1$，没使用为 $0$)，以及是否使用红变黄魔法和蓝变紫魔法。</p>
+		<p>那么初始状态可以直接在 $i = 2$ 时指定。转移分为<strong>施加魔法</strong>和<strong>攀登</strong>两个步骤进行。</p>
+		<p>在<strong>施加魔法</strong>步骤中，我们考虑是否在这一步施加三种魔法 (当然后两种魔法需要有当前格子颜色匹配的条件)，分别转移即可 (比如施加红变黄魔法的转移方程即为 $f_{i, j, k, c, 1, b} \uparrow f_{i, j, k, c, 0, b}$，其中 $a \uparrow b$ 代表 <code>a += b</code>)，最后再乘上该位置的金币数 $A_{i, j}$。</p>
+		<p>在<strong>攀登</strong>步骤中，我们枚举这一次 ($i-1 \to i$) 的方向和下一次的方向 ($i \to i+1$)，如果方向相同，则直接转移，如果方向不同，则要保证 $c = 1$，且 (转移后的) 目标状态的 $c = 0$。</p>
+		<p>最终只要将所有 $i = m \wedge c = 1$ 的结果相加即可，总状态数 (和时间复杂度) 就变成了 $O(n^2)$。</p>
+
+		<h3>代码</h3>
+
+		<div class="panel-body"><pre class="sh_sourceCode"><code class="sh_cpp">#include &lt;bits/stdc++.h&gt;
+#define N 2034
+using namespace std;
+
+typedef long long ll;
+const ll mod = 998244353;
+
+int n, h;
+int a[N][N];
+char col[N];
+ll f[N][N][3][8];
+// f[i][j][k][(b_2 b_1 b_0)_2]: Y = i, X = j, Dir = k, (Continuous, Red, Blue) Combo = (b_2, b_1, b_0)
+
+inline int prev(int x) {return (x ? x : n) - 1;}
+inline int succ(int x) {return x + 1 == n ? 0 : x + 1;}
+inline void add(ll &amp;x, const ll y) {(x += y) &gt;= mod ? x -= mod : 0;}
+
+void combo(int i){ // height
+	int j, k, b;
+	for(j = 0; j &lt; n; ++j) // Position X
+		for(k = 0; k &lt; 3; ++k){ // Direction
+			ll *dp = f[i][j][k]; add(dp[4], dp[0]); add(dp[5], dp[1]); add(dp[6], dp[2]); add(dp[7], dp[3]); // Continuous Combo
+			if(col[j] == 114)   {add(dp[2], dp[0]); add(dp[3], dp[1]); add(dp[6], dp[4]); add(dp[7], dp[5]);} // Red Combo
+			if(col[j] == 98)    {add(dp[1], dp[0]); add(dp[3], dp[2]); add(dp[5], dp[4]); add(dp[7], dp[6]);} // Blue Comb
+			for(b = 0; b &lt; 8; ++b) dp[b] = dp[b] * a[i][j] % mod; // Weight
+		}
+}
+
+int dp(){
+	int i, j, k, nj, nk, b;
+	ll result = 0;
+	for(i = 0; i &lt; n; ++i)
+		for(j = 0; j &lt;= (col[i] == 114); ++j)
+			for(k = 0; k &lt;= (col[i] == 98); ++k){
+				f[2][prev(i)][0][j &lt;&lt; 1 | k] = a[1][i];
+				f[2][     i ][1][j &lt;&lt; 1 | k] = a[1][i];
+				f[2][succ(i)][2][j &lt;&lt; 1 | k] = a[1][i];
+			}
+	combo(2);
+	for(i = 2; i &lt; h; ++i){
+		for(j = 0; j &lt; n; ++j) // Position X
+			for(k = 0; k &lt; 3; ++k) // Old Direction
+				for(nk = 0; nk &lt; 3; ++nk){ // New Direction
+					nj = (nk ? (nk == 1 ? j : succ(j)) : prev(j)); // New Position
+					for(b = 0; b &lt; 4; ++b) // Color Combo
+						if(k == nk){ // Same Direction
+							add(f[i + 1][nj][nk][b], f[i][j][k][b]);
+							add(f[i + 1][nj][nk][b | 4], f[i][j][k][b | 4]);
+						}else
+							add(f[i + 1][nj][nk][b], f[i][j][k][b | 4]);
+				}
+		combo(i + 1);
+	}
+	for(j = 0; j &lt; n; ++j)
+		for(k = 0; k &lt; 3; ++k)
+			for(b = 4; b &lt; 8; ++b)
+				add(result, f[h][j][k][b]);
+	return printf("%lld\n", result), 0;
+}
+
+int main(){
+	int i, j;
+	scanf("%d%d%s", &amp;n, &amp;h, col);
+	for(i = 1; i &lt;= h; ++i)
+		for(j = 0; j &lt; n; ++j)
+			scanf("%d", a[i] + j);
+	return dp();
+}
+</code><script type="text/javascript">syntax_highlight()</script>
+</pre></div>
+
+		<h3>坑</h3>
+		<p>转移的时候可以进行状态压缩 (比如三种魔法)，减少高维数组寻址的常数。</p>
+		<p><strong>坑1：</strong>不要忘记转移时的判颜色条件和乘以金币数量！</p>
+	</body>
+</html>
