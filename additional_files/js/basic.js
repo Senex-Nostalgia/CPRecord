@@ -22,7 +22,7 @@ const
 		DisplayDict = {'Luogu' : '洛谷', 'SPOJ' : 'Sphere OJ', 'SOJ' : 'Simple OJ/Stupid OJ', 'Local' : '本地', 'Unknown' : '一些看似不是很知名的 OJ，快去问一问大佬们吧'},
 		NormDict = {'lydsy' : 'Lydsy', 'lg' : 'Luogu', 'vijos' : 'Vijos', 'hdu' : 'HDU', 'poj' : 'POJ', 'uoj' : 'UOJ', 'loj' : 'LibreOJ', 'simpleoj' : 'SOJ', 'soj' : 'SOJ', 'cf' : 'Codeforces', 'gym' : 'Codeforces', 'cc' : 'Codechef', 'ac' : 'AtCoder', 'agc' : 'AtCoder', 'arc' : 'AtCoder', 'abc' : 'AtCoder', 'spoj' : 'SPOJ'},
 		SiteDict = {
-			'lydsy' : [/^(\d+)$/, x => `https://darkbzoj.tk/problem/${x}`],
+			'lydsy' : [/^(\d+)$/, x => `https://darkbzoj.cc/problem/${x}`],
 			'lg' : [/^([TU]?)(\d+)$/, (x, y) => `https://www.luogu.com.cn/problem/${x || 'P'}${y}`],
 			'vijos' : [/^(\d+)$/, x => `https://vijos.org/p/${x}`],
 			'hdu' : [/^(\d+)$/, x => `http://acm.hdu.edu.cn/showproblem.php?pid=${x}`],
@@ -181,7 +181,7 @@ const
 				if (e.which === 13 || e.keyCode === 13) {
 					let p = parseInt(this.value);
 					if (1 <= p && p <= totPage) location.href = getPageUri(p);
-					else alert('你都输入的些什么呀，认真点！');
+					else alert('您是否输错了些什么？');
 				}
 			}).blur(function () {
 				let p = parseInt(this.value);
@@ -231,16 +231,16 @@ const
 		$('#motto').fadeTo(2000, 1, function () {$(this).css('opacity', '');});
 
 		if (getStorage('check-version') !== 'off') {
-			let local_ver = '7.4.11', prompt_str;
-			$.ajax('https://yhx-12243.github.io/OI-transit/additional_files/others/version', {
+			let local_ver = '1.0.0', prompt_str;
+			$.ajax('https://Senex-Nostalgia/CPRecord/additional_files/others/version', {
 				type : 'GET',
 				cache : false,
 				success : ver => {
 					if (natcmp(local_ver, ver = ver.trim()) < 0) {
-						prompt_str = 'Warning: 当前 OI-transit 版本 (' + local_ver + ') 非最新版本 (' + ver + ')，请前往 https://github.com/yhx-12243/OI-transit 获取最新版。';
+						prompt_str = 'Warning: 当前 CP Record 版本 (' + local_ver + ') 非最新版本 (' + ver + ')，请前往 https://Senex-Nostalgia/CPRecord 获取最新版。';
 						console.log(prompt_str);
 						if (confirm(prompt_str + '\n    (点击确定进入 GitHub，点击取消不再提醒)')) {
-							win.open('https://github.com/yhx-12243/OI-transit');
+							win.open('https://Senex-Nostalgia/CPRecord');
 						} else {
 							alert('Tip: 版本检查可以在「小工具」中「更多设置」里重新打开。');
 							setStorage('check-version', 'off');
