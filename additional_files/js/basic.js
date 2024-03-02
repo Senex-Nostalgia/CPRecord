@@ -43,37 +43,6 @@ const
 		FLDict = {
 			'Heratino' : '',
 			'Ackerlanna' : '',
-			'bestFy' : 'https://bestfy.cnblogs.com/',
-			'_ChenKerui' : '',
-			'daklqw' : 'https://daklqw.cnblogs.com/',
-			'ddfsb' : '',
-			'ddpag' : '',
-			'des3ns1tized_' : '',
-			'ig-Rookie' : '',
-			'ig-TheShy' : 'https://www.cnblogs.com/xuanyiming/',
-			'lbn187' : '',
-			'lych_cys' : 'https://blog.csdn.net/lych_cys/',
-			'lyx_cjz' : '',
-			'Memory_of_winter' : 'https://www.cnblogs.com/Memory-of-winter/',
-			'memset0c' : 'https://memset0.cn/',
-			'miaom' : '',
-			'mrsrz' : 'https://mrsrz.github.io/',
-			'msuwakow' : 'https://www.cnblogs.com/suwakow/',
-			'nbdhhzh' : '',
-			'ouuan' : 'https://ouuan.github.io/',
-			'qiqi20021026' : 'https://bomb-chicken.github.io/',
-			'remember' : '',
-			'shaochengxi' : 'https://scx117.cnblogs.com/',
-			'skip1978' : 'https://www.cnblogs.com/skip1978/',
-			'skip2004' : '',
-			'skylee' : 'https://skylee03.cnblogs.com/',
-			'StudyingFather' : 'https://studyingfather.com/',
-			'suncongbo' : 'https://www.cnblogs.com/suncongbo/',
-			'TOMCATa' : '',
-			'wanglichao1121' : '',
-			'weng_233' : '',
-			'weng_weijie' : '',
-			'wzf2000' : 'https://wzf2000.top/'
 		};
 
 	persons = Object.keys(FLDict);
@@ -181,7 +150,7 @@ const
 				if (e.which === 13 || e.keyCode === 13) {
 					let p = parseInt(this.value);
 					if (1 <= p && p <= totPage) location.href = getPageUri(p);
-					else alert('您是否输错了些什么？');
+					else alert('抱歉，您是否输错了些什么？');
 				}
 			}).blur(function () {
 				let p = parseInt(this.value);
