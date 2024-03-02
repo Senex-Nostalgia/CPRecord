@@ -62,7 +62,7 @@
 		totPage = Math.ceil(count / RECORDS_PER_PAGE);
 		curPage = (curPage >= 1 ? Math.min(curPage, totPage) : 1);
 		$('#recTable').append(Rows.slice((curPage - 1) * RECORDS_PER_PAGE, curPage * RECORDS_PER_PAGE));
-		$('#recTotal').html('统计：' + (count ? (curLocation || config['tag'] || config['search'] ? '当前位置' : '') + '共有 ' + count + ' 条记录' : '怎么一道题都还没有啊，是你瞎编的算法么？'));
+		$('#recTotal').html('统计：' + (count ? (curLocation || config['tag'] || config['search'] ? '当前位置' : '') + '共有 ' + count + ' 条记录' : '抱歉，还没有这样的记录。'));
 		pagination();
 	}
 
