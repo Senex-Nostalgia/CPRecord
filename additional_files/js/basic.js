@@ -41,7 +41,8 @@ const
 			'spoj' : [/^(\w+)$/, x => `http://www.spoj.com/problems/${x}/`]
 		},
 		FLDict = {
-			'Always' : '',
+			'Heratino' : '',
+			'Ackerlanna' : '',
 			'bestFy' : 'https://bestfy.cnblogs.com/',
 			'_ChenKerui' : '',
 			'daklqw' : 'https://daklqw.cnblogs.com/',

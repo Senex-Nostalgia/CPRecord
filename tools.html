@@ -62,8 +62,8 @@
 						return n < 32 || n == 41 || n == 373 ? !(B(1601558355) >> n & B(1)) : Miller_Rabin(n);
 					}
 
-					$('#status-power-mod').html('您的浏览器<strong style="color: #09f">滋磁</strong> <code>BigInt</code>，可以完成任意精度的计算。');
-					$('#status-primality-test').html('您的浏览器<strong style="color: #09f">滋磁</strong> <code>BigInt</code>，可以完成 2<sup>64</sup> 内素数的判定。');
+					$('#status-power-mod').html('您的浏览器<strong style="color: #09f">支持</strong> <code>BigInt</code>，可以完成任意精度的计算。');
+					$('#status-primality-test').html('您的浏览器<strong style="color: #09f">支持</strong> <code>BigInt</code>，可以完成 2<sup>64</sup> 内素数的判定。');
 				} else {
 					function MulMod(a, b, m) {
 						let ah = a >> 16, al = a & 0xffff, bh = b >> 16, bl = b & 0xffff;
@@ -111,8 +111,8 @@
 						return n < 32 || n === 61 ? !(1601558355 >> n & 1) : Miller_Rabin(n);
 					}
 
-					$('#status-power-mod').html('您的浏览器<strong style="color: #630">不滋磁</strong> <code>BigInt</code>，只能完成 2<sup>31</sup> 内整数的计算。');
-					$('#status-primality-test').html('您的浏览器<strong style="color: #630">不滋磁</strong> <code>BigInt</code>，只能完成 2<sup>31</sup> 内素数的判定。');
+					$('#status-power-mod').html('您的浏览器<strong style="color: #630">不支持</strong> <code>BigInt</code>，只能完成 2<sup>31</sup> 内整数的计算。');
+					$('#status-primality-test').html('您的浏览器<strong style="color: #630">不支持</strong> <code>BigInt</code>，只能完成 2<sup>31</sup> 内素数的判定。');
 				}
 
 				$('#calc-power-mod').click(function () {
