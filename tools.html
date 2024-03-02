@@ -62,8 +62,8 @@
 						return n < 32 || n == 41 || n == 373 ? !(B(1601558355) >> n & B(1)) : Miller_Rabin(n);
 					}
 
-					$('#status-power-mod').html('您的浏览器<strong style="color: #09f">支持</strong> <code>BigInt</code>，可以完成任意精度的计算。');
-					$('#status-primality-test').html('您的浏览器<strong style="color: #09f">支持</strong> <code>BigInt</code>，可以完成 2<sup>64</sup> 内素数的判定。');
+					$('#status-power-mod').html('您的浏览器<strong style="color: #4b0080">支持</strong> <code>BigInt</code>，可以完成任意精度的计算。');
+					$('#status-primality-test').html('您的浏览器<strong style="color: #4b0080">支持</strong> <code>BigInt</code>，可以完成 2<sup>64</sup> 内素数的判定。');
 				} else {
 					function MulMod(a, b, m) {
 						let ah = a >> 16, al = a & 0xffff, bh = b >> 16, bl = b & 0xffff;
@@ -138,7 +138,7 @@
 					$('#toggle-marquee').html('关闭');
 					return 'on';
 				}, marquee_off = () => {
-					$('#status-marquee').html('off').css('color', '#09f');
+					$('#status-marquee').html('off').css('color', '#4b0080');
 					$('#toggle-marquee').html('开启');
 					return 'off';
 				};
@@ -153,7 +153,7 @@
 					$('#toggle-speed').html('关闭');
 					return 'on';
 				}, speed_off = () => {
-					$('#status-speed').html('off').css('color', '#09f');
+					$('#status-speed').html('off').css('color', '#4b0080');
 					$('#toggle-speed').html('开启');
 					return 'off';
 				};
@@ -172,7 +172,7 @@
 					$('#status-ranklist-mode').html('并行请求').css('color', '#090');
 					return 'parallel';
 				}, ranklist_serial = () => {
-					$('#status-ranklist-mode').html('顺序请求').css('color', '#09f');
+					$('#status-ranklist-mode').html('顺序请求').css('color', '#4b0080');
 					return 'serial';
 				};
 				let recent = getStorage('ranklist-recent');
@@ -224,7 +224,7 @@
 					$('#toggle-check-version').html('关闭');
 					return 'on';
 				}, check_version_off = () => {
-					$('#status-check-version').html('off').css('color', '#09f');
+					$('#status-check-version').html('off').css('color', '#4b0080');
 					$('#toggle-check-version').html('开启');
 					return 'off';
 				};
@@ -234,7 +234,7 @@
 
 				// ---------------- pagination ---------------- //
 				const pagination_normal = () => {
-					$('#status-pagination').html('正常').css('color', '#09f');
+					$('#status-pagination').html('正常').css('color', '#4b0080');
 					$('#example-pagination').html('例：6 7 8 9 <span style="text-decoration: underline">10</span> 11 12 13 14');
 					return 'normal';
 				}, pagination_doubling = () => {
@@ -266,7 +266,7 @@
 
 				// ---------------- codeforces-portal ---------------- //
 				const codeforces_portal_in_contest = () => {
-					$('#status-codeforces-portal').html('比赛内链接').css('color', '#09f');
+					$('#status-codeforces-portal').html('比赛内链接').css('color', '#4b0080');
 					$('#example-codeforces-portal').html('例：<a href="https://codeforces.com/contest/1/problem/A" target="_blank">https://codeforces.com/contest/1/problem/A</a>。');
 					return 'in-contest';
 				}, codeforces_portal_in_problemset = () => {
@@ -280,7 +280,7 @@
 
 				// ---------------- atcoder-portal ---------------- //
 				const atcoder_portal_major = () => {
-					$('#status-atcoder-portal').html('主站链接').css('color', '#09f');
+					$('#status-atcoder-portal').html('主站链接').css('color', '#4b0080');
 					$('#example-atcoder-portal').html('例：<a href="https://atcoder.jp/contests/agc001/tasks/agc001_a" target="_blank">https://atcoder.jp/contests/agc001/tasks/agc001_a</a>。');
 					return 'major';
 				}, atcoder_portal_minor = () => {
