@@ -19,7 +19,7 @@ const
 		atcoder_flag = getStorage('atcoder-portal') === 'minor';
 
 	const
-		DisplayDict = { 'Luogu': '洛谷', 'SPOJ': 'Sphere OJ', 'rg': 'Regulus OJ', 'Local': '本地', 'NowCoder': '牛客', 'zr': '正睿', 'Unknown': '用得比较少的OJ', 'HaoBa': 'HaoBa'},
+		DisplayDict = { 'Luogu': '洛谷', 'SPOJ': 'Sphere OJ', 'rg': 'Regulus OJ', 'Local': '本地', 'NowCoder': '牛客', 'ZhengRui': '正睿', 'Unknown': '用得比较少的OJ', 'HaoBa': 'HaoBa', 'Regulus': 'Regulus OJ'},
 		NormDict = { 'bzoj': 'BZOJ', 'lg': 'Luogu', 'uoj': 'UOJ', 'loj': 'LibreOJ', 'cf': 'Codeforces', 'gym': 'Codeforces', 'cc': 'Codechef', 'ac': 'AtCoder', 'agc': 'AtCoder', 'arc': 'AtCoder', 'abc': 'AtCoder', 'spoj': 'SPOJ', 'qoj': 'QOJ', 'tc': 'TopCoder', 'ykc' : "YukiCoder", 'nc': 'NowCoder', 'hb' : 'HaoBa', 'mx': 'MengXiong', 'rg': 'Regulus', 'zr': 'ZhengRui'},
 		SiteDict = {
 			'bzoj': [/^(\d+)$/, x => `https://darkbzoj.cc/problem/${x}`],
