@@ -31,7 +31,7 @@ const
 			'loj': [/^(\d+)$/, x => `https://loj.ac/p/${x}`],
 			'ykc': [/^(\d+)$/, x => `https://yukicoder.me/problems/no/${x}`],
 			'tc': [/^(\d+)$/, x => `https://community.topcoder.com/stat?c=problem_statement&pm=${x}`],
-			'mx': [/^(\d+)([A-Z])$/, (x, y) => `http://47.94.97.204/contest/${x}/problem/${y[0].charCodeAt()-65+1}`],
+			'mx': [/^(\d+)([A-Z])$/, (x, y) => `http://47.94.97.204/contest/${x}/problem/${Sring(y[0].charCodeAt()-65+1)}`],
 			'hb': [/^(\d+)$/, x => `http://haoba.vip/d/Contest/p/${x}`],
 			'cf': [/^(\d+)([A-Z]\d*)$/, codeforces_flag ? (x, y) => `https://codeforces.com/problemset/problem/${x}/${y}` : (x, y) => `https://codeforces.com/contest/${x}/problem/${y}`],
 			'qoj': [/^(\d+)$/, x => `https://qoj.ac/problem/${x}`],
