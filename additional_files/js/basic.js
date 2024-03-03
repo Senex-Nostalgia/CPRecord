@@ -30,7 +30,7 @@ const
 			'zr': [/^(\d+)$/, x => `http://zhengruioi.com/problem/${x}`],
 			'loj': [/^(\d+)$/, x => `https://loj.ac/p/${x}`],
 			'ykc': [/^(\d+)$/, x => `https://yukicoder.me/problems/no/${x}`],
-			'tc': [/^(\d+)$/, x => `https://community.topcoder.com/stat?c=problem_statement&pm=${x}`],
+			'tc': [/^(\d+)$/, x => `https://community.topcoder.com/stat?c=problem_statement&pm=${typeof x}`],
 			'mx': [/^(\d+)([A-Z])$/, (x, y) => `http://47.94.97.204/contest/${x}/problem/${y}`],
 			'hb': [/^(\d+)$/, x => `http://haoba.vip/d/Contest/p/${x}`],
 			'cf': [/^(\d+)([A-Z]\d*)$/, codeforces_flag ? (x, y) => `https://codeforces.com/problemset/problem/${x}/${y}` : (x, y) => `https://codeforces.com/contest/${x}/problem/${y}`],
