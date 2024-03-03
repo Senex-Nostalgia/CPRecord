@@ -35,7 +35,7 @@ const
 			'cf': [/^(\d+)([A-Z]\d*)$/, codeforces_flag ? (x, y) => `https://codeforces.com/problemset/problem/${x}/${y}` : (x, y) => `https://codeforces.com/contest/${x}/problem/${y}`],
 			'gym': [/^(\d+)([A-Z]\d*)$/, (x, y) => `https://codeforces.com/gym/${x}/problem/${y}`],
 			'cc': [/^(\w+)$/, x => `https://www.codechef.com/problems/${x}/`],
-			'nc' : [/^(\d+)([A-Z]\d*)$/, (x, y) => `https://ac.nowcoder.com/acm/contest/${x}/${y}`],
+			'nc' : [/^(\d+)$/, x => `https://ac.nowcoder.com/acm/problem/${x}`],
 			'rg': [/^(\w+)$/, x => `http://39.106.65.172/d/Rigel/p/${x}`],
 			'ac': [/^(\d+)$/, getAtCoderID],
 			'agc': [/^(\d+)([A-Z])$/, atcoder_flag ? (x, y) => `https://agc${x}.contest.atcoder.jp/tasks/agc${x}_${char_offset(y, 32)}` : (x, y) => `https://atcoder.jp/contests/agc${x}/tasks/agc${x}_${char_offset(y, 32)}`],
