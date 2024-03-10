@@ -1,8 +1,8 @@
 import os
 import sys
 import html
-def translate1(intputname, outputname):
-	I = open(intputname, "r", encoding='utf-8')
+def translate1(inputname, outputname):
+	I = open(inputname, "r", encoding='utf-8')
 	O = open(outputname, "w", encoding='utf-8')
 	L = I.readlines()
 	c = 0
@@ -27,7 +27,7 @@ def TranslateMarkdownToHtml(inputname, outputname, tmp, name):
 	article = obj.readlines();
 	fempty = True
 
-	Cfile = open(os.path.join(tmp, str(blocksCount) + ".md"), "w")
+	Cfile = open(os.path.join(tmp, str(blocksCount) + ".md"), "w", encoding='utf-8')
 	type.append(False)
 
 	i = 0
@@ -77,7 +77,7 @@ def TranslateMarkdownToHtml(inputname, outputname, tmp, name):
 			translate1(inName, outName)
 		else:
 			os.system("pandoc -f markdown+tex_math_dollars -t html " + inName + " -o " + outName + " --mathjax")
-			sys.stderr.write("pandoc -f markdown+tex_math_dollars -t html " + inName + " -o " + outName + " --mathjax" + '\n')
+			# sys.stderr.write("pandoc -f markdown+tex_math_dollars -t html " + inName + " -o " + outName + " --mathjax" + '\n')
 
 	OUTPUT = open(outputname, "w", encoding='utf-8')
 	OUTPUT.write('''<!DOCTYPE html>\n<html lang="zh-cn">\n\n<head>\n\t<meta charset="utf-8">\n\t<link type="text/css" rel="stylesheet" href="../additional_files/css/bootstrap.min.css">\n\t<link type="text/css" rel="stylesheet" href="../additional_files/css/sh_typical.min.css">\n\t<title>''')
@@ -92,6 +92,8 @@ def TranslateMarkdownToHtml(inputname, outputname, tmp, name):
 			OUTPUT.write("""\n</code><script>syntax_highlight()</script>\n</pre></div>\n""")
 	
 	OUTPUT.write("</body>\n</html>")
+
+	os.system("prettier --config --write " + outputname)
 	return
 
 cur = os.path.dirname(__file__)

@@ -1,3 +1,15 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+
+<head>
+	<meta charset="utf-8">
+	<link type="text/css" rel="stylesheet" href="../additional_files/css/bootstrap.min.css">
+	<link type="text/css" rel="stylesheet" href="../additional_files/css/sh_typical.min.css">
+	<title>abc344F</title>
+	<script src="../additional_files/js/sh_main.min.js"></script>
+	<script src="../additional_files/MathJax-master/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</head>
+<body>
 <h3 id="题目描述">题目描述</h3>
 <p>有一个网格，网格中有 <span class="math inline">\(N\)</span> 行 <span
 class="math inline">\(N\)</span> 列。让 <span
@@ -50,3 +62,89 @@ class="math inline">\(k\)</span>，在最小化天数的情况下最多剩下 <s
 class="math inline">\(res\)</span> 块钱即可转移。</p>
 <p>时间复杂度 <span class="math inline">\(\mathcal O(n^4)\)</span>。</p>
 <h3 id="代码">代码</h3>
+<div class="panel-body"><pre class="sh_sourceCode"><code class="sh_cpp">/*
+ * Copyright© 2024 Heratino &amp; Nelofus. All rights reserved.
+ * author: Heratino &amp; Nelofus
+ * Problem: ABC344F. Earn to Advance
+ * Tag: DP
+ * Memory Limit: 1024MiB
+ * Time Limit: 4000ms
+ * Source: ABC344
+ */
+
+// Narcissus &amp; どうか安寧な記憶を
+
+#include &lt;bits/stdc++.h&gt;
+using i64 = long long;
+
+constexpr int N = 85;
+constexpr i64 inf = 0x3f3f3f3f3f3f3f3f;
+int n;
+int p[N][N], R[N][N], D[N][N];
+std::pair&lt;i64, i64&gt; f[N][N];
+i64 dis[N][N];
+
+void solve() {
+	std::cin &gt;&gt; n;
+	for (int i = 1; i &lt;= n; i++)
+		for (int j = 1; j &lt;= n; j++)
+			std::cin &gt;&gt; p[i][j];
+	p[n][n] = 1e9 + 10;
+
+	for (int i = 1; i &lt;= n; i++)
+		for (int j = 1; j &lt;= n - 1; j++)
+			std::cin &gt;&gt; R[i][j];
+	for (int i = 1; i &lt;= n - 1; i++)
+		for (int j = 1; j &lt;= n; j++)
+			std::cin &gt;&gt; D[i][j];
+	for (int i = 1; i &lt;= n; i++)
+		for (int j = 1; j &lt;= n; j++) {
+			auto &amp;[a, b] = f[i][j];
+			a = inf;
+			b = 0ll;
+		}
+	f[1][1] = std::make_pair(0ll, 0ll);
+	for (int i = 1; i &lt;= n; i++)
+		for (int j = 1; j &lt;= n; j++) {
+			memset(dis, 0x3f, sizeof(dis));
+			dis[i][j] = 0ll;
+			for (int x = i; x &lt;= n; x++)
+				for (int y = j; y &lt;= n; y++) {
+					dis[x][y] = std::min(dis[x][y], dis[x][y - 1] + R[x][y - 1]);
+					dis[x][y] = std::min(dis[x][y], dis[x - 1][y] + D[x - 1][y]);
+				}
+			for (int x = i; x &lt;= n; x++)
+				for (int y = j; y &lt;= n; y++) {
+					if (p[x][y] &lt;= p[i][j])
+						continue;
+					auto &amp;[k, res] = f[i][j];
+					i64 need = std::max(0ll, (dis[x][y] - res - 1) / p[i][j] + 1);
+					i64 newk = k + need + (x - i) + (y - j);
+					i64 neww = res - dis[x][y] + need * p[i][j];
+					if (newk &lt; f[x][y].first || (newk == f[x][y].first &amp;&amp; neww &gt; f[x][y].second))
+						f[x][y] = std::make_pair(newk, neww);
+				}
+		}
+	std::cout &lt;&lt; f[n][n].first &lt;&lt; &#x27;\n&#x27;;
+}
+
+/* 无法忘却的记忆与苍蓝之梦 */
+int main() {
+#ifdef HeratinoNelofus
+	freopen(&quot;input.txt&quot;, &quot;r&quot;, stdin);
+#endif
+	std::ios::sync_with_stdio(false);
+	std::cin.tie(nullptr);
+
+	int T = 1;
+	while (T--) {
+		solve();
+	}
+	return 0;
+}
+
+</code><script>syntax_highlight()</script>
+</pre></div>
+
+</body>
+</html>

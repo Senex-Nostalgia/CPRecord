@@ -1,34 +1,80 @@
+/*
+ * Copyright© 2024 Heratino &amp; Nelofus. All rights reserved.
+ * author: Heratino &amp; Nelofus
+ * Problem: ABC344F. Earn to Advance
+ * Tag: DP
+ * Memory Limit: 1024MiB
+ * Time Limit: 4000ms
+ * Source: ABC344
+ */
+
+// Narcissus &amp; どうか安寧な記憶を
+
 #include &lt;bits/stdc++.h&gt;
 using i64 = long long;
 
+constexpr int N = 85;
+constexpr i64 inf = 0x3f3f3f3f3f3f3f3f;
+int n;
+int p[N][N], R[N][N], D[N][N];
+std::pair&lt;i64, i64&gt; f[N][N];
+i64 dis[N][N];
+
+void solve() {
+	std::cin &gt;&gt; n;
+	for (int i = 1; i &lt;= n; i++)
+		for (int j = 1; j &lt;= n; j++)
+			std::cin &gt;&gt; p[i][j];
+	p[n][n] = 1e9 + 10;
+
+	for (int i = 1; i &lt;= n; i++)
+		for (int j = 1; j &lt;= n - 1; j++)
+			std::cin &gt;&gt; R[i][j];
+	for (int i = 1; i &lt;= n - 1; i++)
+		for (int j = 1; j &lt;= n; j++)
+			std::cin &gt;&gt; D[i][j];
+	for (int i = 1; i &lt;= n; i++)
+		for (int j = 1; j &lt;= n; j++) {
+			auto &amp;[a, b] = f[i][j];
+			a = inf;
+			b = 0ll;
+		}
+	f[1][1] = std::make_pair(0ll, 0ll);
+	for (int i = 1; i &lt;= n; i++)
+		for (int j = 1; j &lt;= n; j++) {
+			memset(dis, 0x3f, sizeof(dis));
+			dis[i][j] = 0ll;
+			for (int x = i; x &lt;= n; x++)
+				for (int y = j; y &lt;= n; y++) {
+					dis[x][y] = std::min(dis[x][y], dis[x][y - 1] + R[x][y - 1]);
+					dis[x][y] = std::min(dis[x][y], dis[x - 1][y] + D[x - 1][y]);
+				}
+			for (int x = i; x &lt;= n; x++)
+				for (int y = j; y &lt;= n; y++) {
+					if (p[x][y] &lt;= p[i][j])
+						continue;
+					auto &amp;[k, res] = f[i][j];
+					i64 need = std::max(0ll, (dis[x][y] - res - 1) / p[i][j] + 1);
+					i64 newk = k + need + (x - i) + (y - j);
+					i64 neww = res - dis[x][y] + need * p[i][j];
+					if (newk &lt; f[x][y].first || (newk == f[x][y].first &amp;&amp; neww &gt; f[x][y].second))
+						f[x][y] = std::make_pair(newk, neww);
+				}
+		}
+	std::cout &lt;&lt; f[n][n].first &lt;&lt; &#x27;\n&#x27;;
+}
+
+/* 无法忘却的记忆与苍蓝之梦 */
 int main() {
+#ifdef HeratinoNelofus
+	freopen(&quot;input.txt&quot;, &quot;r&quot;, stdin);
+#endif
 	std::ios::sync_with_stdio(false);
 	std::cin.tie(nullptr);
 
-	int T;
-	std::cin &gt;&gt; T;
+	int T = 1;
 	while (T--) {
-		int n;
-		i64 d;
-		std::cin &gt;&gt; n &gt;&gt; d;
-		std::vector&lt;i64&gt; a(n);
-		for (auto &amp;x : a)	std::cin &gt;&gt; x;
-		std::sort(a.begin(), a.end());
-
-		std::priority_queue&lt;i64&gt; q;
-		i64 ans = 0;
-		for (int i = 0; i &lt; n; i++) {
-			i64 pos = a[i] - i * d;
-			if (pos &lt; 0)
-				ans += -pos, pos = 0;
-			if (!q.empty() &amp;&amp; pos &lt; q.top()) {
-				ans += q.top() - pos;
-				q.pop();
-				q.push(pos);
-			}
-			q.push(pos);
-		}
-		std::cout &lt;&lt; ans &lt;&lt; &#x27;\n&#x27;;
+		solve();
 	}
 	return 0;
 }
