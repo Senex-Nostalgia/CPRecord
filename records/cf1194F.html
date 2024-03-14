@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+
+<head>
+	<meta charset="utf-8">
+	<link type="text/css" rel="stylesheet" href="../additional_files/css/bootstrap.min.css">
+	<link type="text/css" rel="stylesheet" href="../additional_files/css/sh_typical.min.css">
+	<title>cf1194F</title>
+	<script src="../additional_files/js/sh_main.min.js"></script>
+	<script src="../additional_files/MathJax-master/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</head>
+<body>
+<h3 id="题目描述">题目描述</h3>
+<p>你有 <span class="math inline">\(n\)</span> 个题目 <span
+class="math inline">\(T\)</span> 秒时间，做出第 <span
+class="math inline">\(i\)</span> 个题目需要消耗时间 <span
+class="math inline">\(t_i\)</span> 秒。</p>
+<p>但每题有 <span class="math inline">\(50\%\)</span> 的概率消耗多 <span
+class="math inline">\(1\)</span> 秒，问从 <span
+class="math inline">\(1\)</span> 开始按给定的顺序向后做，<span
+class="math inline">\(T\)</span> 秒时做出题目数目的期望值。 ### 数据范围
+<span class="math inline">\(1\le n\le 2\cdot 10^5,1\le T\le 2\cdot
+10^{14}\)</span> <span class="math inline">\(1\le t_i\le 10^9\)</span>
+### 题解</p>
+<p>设 <span class="math inline">\(Q(i)\)</span> 为通过题数恰好为 <span
+class="math inline">\(i\)</span> 的概率，那么答案为： <span
+class="math display">\[
+\sum_{i=1}^{n}iQ(i)
+\]</span> 若设 <span class="math inline">\(P(i)\)</span>
+为通过题数大于等于 <span class="math inline">\(i\)</span>
+的概率，那么答案为： <span class="math display">\[
+\sum_{i=1}^{n}P(i)
+\]</span> 具体地，这是因为： <span class="math display">\[
+\sum_{i=1}^{n}P(i)=\sum_{i=1}^{n}\sum_{j=i}^{n}Q(j)=\sum_{i=1}^{n}Q(i)\cdot\left(\sum_{j=1}^{i}1\right)
+\]</span> 计算 <span class="math inline">\(P_i\)</span>
+时，我们只要保证前 <span class="math inline">\(i\)</span>
+个能被顺利算出即可，也就是： <span class="math display">\[
+P(i)=\left(\frac{1}{2}\right)^i\sum_{j=0}^{\min\{T-pre_i,n\}}\binom{i}{j}
+\]</span> 后面的是在前 <span class="math inline">\(i\)</span> 个里抽
+<span class="math inline">\(j\)</span> 个附加上剩余秒数。</p>
+<p>那么，我们希望动态维护组合数的行前缀和，不难发现上标不减，下标不增，移动总次数为
+<span class="math inline">\(O(n)\)</span>，设 <span
+class="math inline">\(S(n,m)=\sum_{i=0}^{m}\binom{n}{i}\)</span>。 <span
+class="math display">\[
+S(n+1,m)=\sum_{i=0}^{m}\binom{n+1}{i}=\sum_{i=0}^{m}\binom{n}{i}+\binom{n}{i-1}=2S(n,m)-\binom{n}{m}
+\]</span></p>
+<p><span class="math display">\[
+S(n,m-1)=S(n,m)-\binom{n}{m}
+\]</span></p>
+<h3 id="代码">代码</h3>
+<div class="panel-body"><pre class="sh_sourceCode"><code class="sh_cpp">/*
+ * Copyright© 2024 Heratino &amp; Nelofus. All rights reserved.
+ * author: Heratino &amp; Nelofus
+ * Problem: CF1194F. Crossword Expert
+ * Tag: 概率/期望 DP
+ * Memory Limit: 256MB
+ * Time Limit: 2000ms
+ * Source: Educational Codeforces Round 68 (Rated for Div. 2)
+ * Date: 2024-03-13 
+ */
+
+// Narcissus &amp; どうか安寧な記憶を
+
+#include &lt;bits/stdc++.h&gt;
+using i64 = long long;
+
+constexpr int N = 2e5 + 10;
+constexpr int mod = 1e9 + 7;
+i64 pre[N];
+i64 T;
+int n;
+int fac[N], ifac[N];
+inline int Plus(const int &amp;x, const int &amp;y) {
+	return x + y &gt;= mod ? x + y - mod : x + y;
+}
+inline int Minu(const int &amp;x, const int &amp;y) {
+	return x - y &lt; 0 ? x - y + mod : x - y;
+}
+inline i64 f_pow(i64 a, int k) {
+	i64 base = 1;
+	for (; k; k &gt;&gt;= 1, a = a * a % mod)
+		if (k &amp; 1)
+			base = base * a % mod;
+	return base;
+}
+inline int binom(const int &amp;n, const int &amp;m) {
+	if (m &gt; n)
+		return 0;
+	return 1ll * fac[n] * ifac[n - m] % mod * ifac[m] % mod;
+}
+/* 无法忘却的记忆与苍蓝之梦 */
+int main() {
+#ifdef HeratinoNelofus
+	freopen(&quot;input.txt&quot;, &quot;r&quot;, stdin);
+#endif
+	std::ios::sync_with_stdio(false);
+	std::cin.tie(nullptr);
+
+	fac[0] = 1;
+	for (int i = 1; i &lt; N; i++)
+		fac[i] = 1ll * fac[i - 1] * i % mod;
+	ifac[N - 1] = f_pow(fac[N - 1], mod - 2);
+	for (int i = N - 2; i &gt;= 0; i--)
+		ifac[i] = 1ll * ifac[i + 1] * (i + 1) % mod;
+	std::cin &gt;&gt; n &gt;&gt; T;	
+	for (int i = 1; i &lt;= n; i++) {
+		std::cin &gt;&gt; pre[i];
+		pre[i] += pre[i - 1];
+	}
+	i64 inv = f_pow(2, mod - 2);
+	int prod = 1;
+	int S = 1;
+	// S(0, n)
+	int ans = 0;
+	int l = n, r = 0;
+	for (int i = 1; i &lt;= n; i++) {
+		if (pre[i] &gt; T)
+			break;
+		prod = 1ll * prod * inv % mod;
+
+		while (r &lt; i)
+			S = Minu(Plus(S, S), binom(r, l)), r++;
+		while (l &gt; std::min(0ll + n, T - pre[i]))
+			S = Minu(S, binom(r, l)), l--;
+		ans = Plus(ans, (int)(1ll * prod * S % mod));
+//		int p2 = 0;
+//		for (int j = 0; j &lt;= std::min(T - pre[i], 0ll + n); j++)
+//			p2 = Plus(p2, binom(i, j));
+//		ans = Plus(ans, 1ll * prod * p2 % mod);
+	}
+	std::cout &lt;&lt; ans &lt;&lt; &#x27;\n&#x27;;
+	return 0;
+}
+
+</code><script>syntax_highlight()</script>
+</pre></div>
+<h3 id="坑点">坑点</h3>
+<p>记得在组合数函数里写上 <span class="math inline">\(m&gt;n\)</span>
+时返回 <span class="math inline">\(0\)</span>。</p>
+</body>
+</html>

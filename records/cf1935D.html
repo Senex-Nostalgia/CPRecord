@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+
+<head>
+	<meta charset="utf-8">
+	<link type="text/css" rel="stylesheet" href="../additional_files/css/bootstrap.min.css">
+	<link type="text/css" rel="stylesheet" href="../additional_files/css/sh_typical.min.css">
+	<title>cf1935D</title>
+	<script src="../additional_files/js/sh_main.min.js"></script>
+	<script src="../additional_files/MathJax-master/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</head>
+<body>
+<h3 id="题目描述">题目描述</h3>
+<p>给出一个大小为 <span class="math inline">\(n\)</span> 的集合 <span
+class="math inline">\(S\)</span> 和一个数 <span
+class="math inline">\(c\)</span>，求有多少个数对 <span
+class="math inline">\((x,y)\)</span> 满足：</p>
+<ol type="1">
+<li><span class="math inline">\(0\le x\le y\le c\)</span></li>
+<li><span class="math inline">\(x+y\notin S,y-x\notin S\)</span></li>
+</ol>
+<p>有 <span class="math inline">\(t\)</span> 组测试数据</p>
+<h3 id="输入格式">输入格式</h3>
+<p>每个测试由多个测试用例组成。第一行包含一个整数 <span
+class="math inline">\(t\)</span> ( <span class="math inline">\(1 \leq t
+\leq 2 \cdot 10^4\)</span> ) - 测试用例的个数。测试用例说明如下。</p>
+<p>每个测试用例的第一行包含两个整数 <span
+class="math inline">\(n\)</span> 和 <span
+class="math inline">\(c\)</span> （ <span class="math inline">\(1 \leq n
+\leq 3 \cdot 10^5\)</span> ， <span class="math inline">\(1 \leq c \leq
+10^9\)</span> ）- 集合的大小和整数 <span
+class="math inline">\(c\)</span>。</p>
+<p>每个测试用例的第二行包含 <span class="math inline">\(n\)</span>
+个整数 <span class="math inline">\(s_1, s_2, \ldots, s_{n}\)</span> （
+<span class="math inline">\(0 \leq s_1 &lt; s_2 &lt; \ldots &lt; s_{n}
+\leq c\)</span> ）- 集合 <span class="math inline">\(S\)</span>
+的元素。</p>
+<p>保证所有测试用例中 <span class="math inline">\(n\)</span>
+的总和不超过 <span class="math inline">\(3 \cdot 10^5\)</span> 。</p>
+<h3 id="题解">题解</h3>
+<p>用所有方案数减掉不合法方案数。</p>
+<p>枚举集合 <span class="math inline">\(S\)</span> 中的数，设当前数为
+<span class="math inline">\(z\)</span>，则有 <span
+class="math inline">\(\left\lfloor\dfrac{z}{2}\right\rfloor+1\)</span>
+对 <span class="math inline">\(x\le y\)</span> 满足 <span
+class="math inline">\(x+y=z\)</span>。</p>
+<p>再统计 <span class="math inline">\(y-x=z\)</span> 的数对个数，则
+<span class="math inline">\(y-z=x\)</span>，<span
+class="math inline">\(y\)</span> 最大能取 <span
+class="math inline">\(c\)</span>，又要保证 <span
+class="math inline">\(x\ge 0\)</span>，故 <span
+class="math inline">\(z\le y\le c\)</span>，共有 <span
+class="math inline">\(c-z+1\)</span> 对。</p>
+<p>考虑哪些会被算重，设当前枚举到的数为 <span
+class="math inline">\(z_1\)</span>，<span class="math inline">\(z_2\in
+S\)</span> 且 <span class="math inline">\(z_2\le z_1\)</span>。</p>
+<p>当 <span class="math inline">\(x+y=z_1,y-x=z_2\)</span> 时，<span
+class="math inline">\(x,y\)</span> 这一对被在 <span
+class="math inline">\(z_1\)</span> 处和 <span
+class="math inline">\(z_2\)</span> 处统计了两次。且满足 <span
+class="math inline">\(z_1\equiv z_2\pmod 2\)</span>。</p>
+<p>则只用统计有多少个 <span class="math inline">\(z_2\in S,z_2\le
+z_1\)</span> 且 <span class="math inline">\(z_1\equiv z_2\pmod
+2\)</span> 即可。</p>
+<h3 id="代码">代码</h3>
+<div class="panel-body"><pre class="sh_sourceCode"><code class="sh_cpp">/*
+ * Copyright© 2024 Heratino &amp; Nelofus. All rights reserved.
+ * author: Heratino &amp; Nelofus
+ * Problem: CF1936D. Exam in MAC
+ * Tag: 容斥原理
+ * Memory Limit: 256MB
+ * Time Limit: 2000ms
+ * Source: Codeforces Round 932 (Div. 2)
+ * Date: 2024-03-14 
+ */
+
+// Narcissus &amp; どうか安寧な記憶を
+
+#include &lt;bits/stdc++.h&gt;
+using i64 = long long;
+
+void solve() {
+	int n;
+	i64 c;	
+	std::cin &gt;&gt; n &gt;&gt; c;
+	std::vector&lt;int&gt; a(n);
+	for (int &amp;x : a)	std::cin &gt;&gt; x;
+
+	i64 ans = (c + 1) * (c + 2) / 2;
+	for (const int &amp;x : a) {
+		/* c1 + c2 = x */
+		ans -= x / 2 + 1;
+		/* c2 - c1 = x &lt;=&gt; c2 - x = c1 */
+		/* c2 最大为 c */
+		ans -= c - x + 1;;
+	}
+	std::array&lt;int, 2&gt; cnt = {0, 0};
+	for (const int &amp;x : a) {
+		/* x + y == c1, y - x == c2 */
+		/* c1 === c2 (mod 2) */
+		cnt[x % 2]++;
+		ans += cnt[x % 2];
+	}
+	std::cout &lt;&lt; ans &lt;&lt; &#x27;\n&#x27;;
+}
+
+/* 无法忘却的记忆与苍蓝之梦 */
+int main() {
+#ifdef HeratinoNelofus
+	freopen(&quot;input.txt&quot;, &quot;r&quot;, stdin);
+#endif
+	std::ios::sync_with_stdio(false);
+	std::cin.tie(nullptr);
+
+	int T;
+	std::cin &gt;&gt; T;
+	while (T--) {
+		solve();
+	}
+	return 0;
+}
+
+</code><script>syntax_highlight()</script>
+</pre></div>
+
+</body>
+</html>

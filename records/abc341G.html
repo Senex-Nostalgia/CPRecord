@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+
+<head>
+	<meta charset="utf-8">
+	<link type="text/css" rel="stylesheet" href="../additional_files/css/bootstrap.min.css">
+	<link type="text/css" rel="stylesheet" href="../additional_files/css/sh_typical.min.css">
+	<title>abc341G</title>
+	<script src="../additional_files/js/sh_main.min.js"></script>
+	<script src="../additional_files/MathJax-master/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</head>
+<body>
+<h3 id="题目描述">题目描述</h3>
+<p>给你一个长度为 <span class="math inline">\(N\)</span> 的序列 <span
+class="math inline">\(A=(A_1,A_2,\ldots,A_N)\)</span>。 求每个 <span
+class="math inline">\(k=1,2,\ldots,N\)</span> 的解：</p>
+<ul>
+<li>当选择一个整数 <span class="math inline">\(r\)</span> 使得 <span
+class="math inline">\(k\leq r\leq N\)</span> 时，求序列 <span
+class="math inline">\(A\)</span> 中 <span
+class="math inline">\(k\)</span>-th 到 <span
+class="math inline">\(r\)</span>-th 项的最大平均值。 这里，序列 <span
+class="math inline">\(A\)</span> 的 <span
+class="math inline">\(k\)</span>-th 到 <span
+class="math inline">\(r\)</span>-th 项的平均值定义为 <span
+class="math inline">\(\frac{1}{r-k+1}\displaystyle\sum_{i=k}^r
+A_i\)</span>。</li>
+</ul>
+<h3 id="输入格式">输入格式</h3>
+<p>第一行一个正整数 <span class="math inline">\(N\)</span> <span
+class="math inline">\((1\le N\le 2\times
+10^5)\)</span>，表示序列的长度。</p>
+<p>第二行 <span class="math inline">\(N\)</span> 个正整数 <span
+class="math inline">\(A_1,A_2,\cdots, A_n\)</span> <span
+class="math inline">\((1\le A_i\le 10^6)\)</span>，表示所给序列。</p>
+<h3 id="输出格式">输出格式</h3>
+<p>输出 <span class="math inline">\(N\)</span> 行。</p>
+<p>第 <span class="math inline">\(i\)</span> 行 <span
+class="math inline">\((1\le i\le N)\)</span> 表示 <span
+class="math inline">\(k=i\)</span> 时的答案。</p>
+<p>输出的答案被认为是正确的，当且仅当答案与标准答案绝对误差或相对误差小于
+<span class="math inline">\(10^{-6}\)</span>。</p>
+<h3 id="题解">题解</h3>
+<p>二分答案，设当前答案为 <span
+class="math inline">\(x\)</span>，若该答案可行，则： <span
+class="math display">\[
+\begin{aligned}
+\frac{1}{r-k+1}\displaystyle\sum_{i=k}^r A_i&amp;\ge x\\
+\sum_{i=k}^{r}A_i-(r-k+1)x&amp;\ge 0\\
+\sum_{i=k}^{r}(A_i-x)&amp;\ge 0
+\end{aligned}
+\]</span> 设 <span class="math inline">\(P_i=\displaystyle
+\sum_{j=i}^{i}A_j\)</span>，那么对每个点 <span
+class="math inline">\(i\)</span> 维护一条直线 <span
+class="math inline">\(-ix+P_i\)</span>，计算 <span
+class="math inline">\(k\)</span> 的答案时询问 <span
+class="math inline">\([k,n]\)</span> 中所有直线在 <span
+class="math inline">\(x\)</span> 位置的最大值即可。</p>
+<p>到这一步就可以计算答案了，也可以转成点的形式：</p>
+<p>设第 <span class="math inline">\(i\)</span> 个位置的函数为 <span
+class="math inline">\(f_i\)</span>，若 <span
+class="math inline">\(i&lt;j\)</span> 且 <span
+class="math inline">\(f_i(x)&gt;f_j(x)\)</span>，则： <span
+class="math display">\[
+\begin{aligned}
+f_i(x)-f_j(x)&amp;&gt;0\\
+(-ix+P_i)-(-jx+P_j)&amp;&gt;0\\
+-(i-j)x&amp;&gt;P_j-P_i\\
+x&amp;&lt;\frac{P_i-P_j}{i-j}
+\end{aligned}
+\]</span> 维护若干个点 <span class="math inline">\((i,P_i)\)</span>
+的上凸包即可，同时插入的 <span class="math inline">\(i\)</span>
+单调递减，可以单调队列维护。</p>
+<h3 id="代码">代码</h3>
+<div class="panel-body"><pre class="sh_sourceCode"><code class="sh_cpp">/*
+ * Copyright© 2024 Heratino &amp; Nelofus. All rights reserved.
+ * author: Heratino &amp; Nelofus
+ * Problem: ABC341G. Highest Ratio
+ * Tag: 分数规划; 斜率优化 DP
+ * Memory Limit: 1024MB
+ * Time Limit: 2000ms
+ * Source: Toyota Programming Contest 2024#2 (AtCoder Beginner Contest 341)
+ * Date: 2024-03-14 
+ */
+
+// Narcissus &amp; どうか安寧な記憶を
+
+#include &lt;bits/stdc++.h&gt;
+using i64 = long long;
+using f64 = double;
+using f128 = double;
+
+constexpr int N = 2e5 + 10;
+constexpr f64 eps = 1e-9;
+int n;
+int a[N];
+i64 pre[N];
+f64 ans[N];
+
+struct Point {
+	i64 x, y;
+} P[N];
+using Vector = Point;
+inline Vector trans(const Point &amp;a, const Point &amp;b) {return {b.x - a.x, b.y - a.y};}
+inline i64 Cross(const Vector &amp;a, const Vector &amp;b) {return a.x * b.y - a.y * b.x;}
+inline int dcmp(const f128 &amp;x) {
+	if (fabs(x) &lt; eps)
+		return 0;
+	return x &gt; 0 ? 1 : -1;
+}
+inline int dcmp(const f128 &amp;x, const f128 &amp;y) {return dcmp(y - x);}
+int q[N], tt;
+inline f128 slope(const Point &amp;a, const Point &amp;b) {
+	return (f128)(b.y - a.y) / (b.x - a.x);
+}
+
+inline bool check(const f128 &amp;x, const i64 &amp;Minus1, const i64 &amp;Minus2) {
+	int l = 0, r = tt - 1;
+	while (r - l &gt; 3) {
+		int mid = l + r &gt;&gt; 1;
+		// if (x &lt; slope(P[q[mid]], P[q[mid + 1]]))
+		if (x * (P[q[mid + 1]].x - P[q[mid]].x) &gt; P[q[mid + 1]].y - P[q[mid]].y)
+			r = mid;
+		else
+			l = mid;
+	}
+	f128 maxAns = -1e18;
+	for (int i = l; i &lt;= r; i++) {
+		i64 t1 = pre[q[i]] - Minus1;
+		f128 t2 = (-q[i] - Minus2) * x;
+		if (dcmp(t1 + t2) &gt;= 0)
+			return true;
+	}
+	return false;
+}
+
+/* 无法忘却的记忆与苍蓝之梦 */
+int main() {
+#ifdef HeratinoNelofus
+	freopen(&quot;input.txt&quot;, &quot;r&quot;, stdin);
+#endif
+	std::ios::sync_with_stdio(false);
+	std::cin.tie(nullptr);
+
+	std::cin &gt;&gt; n;	
+	for (int i = 1; i &lt;= n; i++) {
+		std::cin &gt;&gt; a[i];
+		pre[i] = pre[i - 1] + a[i];
+		P[i] = {i, pre[i]};
+	}
+
+	for (int i = n; i &gt;= 1; i--) {
+		while (tt &gt; 1 &amp;&amp; Cross(trans(P[i], P[q[tt - 2]]), trans(P[i], P[q[tt - 1]])) &lt;= 0)
+			tt--;
+		q[tt++] = i;
+		f128 l = 0, r = 1e9 + 10;
+		while (dcmp(l, r) == 1) {
+			f64 mid = (l + r) / 2;
+			if (check(mid, pre[i - 1], -(i - 1)))
+				l = mid;
+			else
+				r = mid;
+		}
+		ans[i] = l;
+	}
+	for (int i = 1; i &lt;= n; i++)
+		std::cout &lt;&lt; std::fixed &lt;&lt; std::setprecision(7) &lt;&lt; ans[i] &lt;&lt; &#x27;\n&#x27;;
+	return 0;
+}
+
+</code><script>syntax_highlight()</script>
+</pre></div>
+<h3 id="坑点">坑点</h3>
+<ol type="1">
+<li><code>long double</code> 也不太能接受 <span
+class="math inline">\(10^{11}\)</span>
+级别的乘法，特别是你需要精确到小数点后八位。</li>
+<li>除法速度比乘法慢多了，能用乘法就别用除法。</li>
+<li>斜率从除法变成乘法的时候，注意分母是否为负数，转换过去的时候可能需要翻转不等号。</li>
+</ol>
+</body>
+</html>

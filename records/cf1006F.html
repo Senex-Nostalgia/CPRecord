@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+
+<head>
+	<meta charset="utf-8">
+	<link type="text/css" rel="stylesheet" href="../additional_files/css/bootstrap.min.css">
+	<link type="text/css" rel="stylesheet" href="../additional_files/css/sh_typical.min.css">
+	<title>cf1006F</title>
+	<script src="../additional_files/js/sh_main.min.js"></script>
+	<script src="../additional_files/MathJax-master/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</head>
+<body>
+<h3 id="题目描述">题目描述</h3>
+<p>给出一个 <span class="math inline">\(n\times m\)</span> 的网格，格子
+<span class="math inline">\((i,j)\)</span> 有权值 <span
+class="math inline">\(a_{i,j}\)</span>，现在要从 <span
+class="math inline">\((1,1)\)</span> 走到 <span
+class="math inline">\((n,m)\)</span> ，每次只能向右或向下走。</p>
+<p>路径的权值定义为经过的所有格子的权值的异或和，求权值等于 <span
+class="math inline">\(k\)</span> 的路径数。</p>
+<h3 id="输入格式">输入格式</h3>
+<p>输入的第一行包含三个整数 <span class="math inline">\(n,m\)</span> 和
+<span class="math inline">\(k\)</span> (<span class="math inline">\(1
+\le n, m \le 20\)</span>，<span class="math inline">\(0 \le k \le
+10^{18}\)</span>) 表示网格的高度和宽度，以及数字 <span
+class="math inline">\(k\)</span> 。</p>
+<p>接下来的 <span class="math inline">\(n\)</span> 行分别包含 <span
+class="math inline">\(m\)</span> 个整数，第 <span
+class="math inline">\(i\)</span> 行的第 <span
+class="math inline">\(j\)</span> 个元素是 <span
+class="math inline">\(a_{i, j}\)</span> (<span class="math inline">\(0
+\le a_{i, j} \le 10^{18}\)</span>)。</p>
+<h3 id="题解">题解</h3>
+<p>不妨假设 <span class="math inline">\(n\le m\)</span>，共有 <span
+class="math inline">\(n-m-2\)</span> 步，<span
+class="math inline">\(n,m\le 20\)</span>，所以不妨分别状压前 <span
+class="math inline">\(n-1\)</span> 和后 <span
+class="math inline">\(m-1\)</span>。</p>
+<p>前半部分从 <span class="math inline">\((1,1)\)</span> 开始行动，每个
+<span class="math inline">\(0\)</span> 代表向右走，<span
+class="math inline">\(1\)</span> 代表向下走。</p>
+<p>后半部分从 <span class="math inline">\((n,m)\)</span> 开始行动，每个
+<span class="math inline">\(0\)</span> 代表向左走，<span
+class="math inline">\(1\)</span> 代表向上走。</p>
+<p>设 <span class="math inline">\(s_1\)</span> 是前半部分的集合，<span
+class="math inline">\(s_2\)</span> 是后半部分的集合，那么所有合法的
+<span class="math inline">\((s_1,s_2)\)</span> 对满足 <span
+class="math inline">\(\operatorname{popcount}(s_1)+\operatorname{popcount}(s_2)=n-1\)</span>。</p>
+<p>对后半部分，每个 <span class="math inline">\(t\)</span> 维护所有
+<span class="math inline">\(\operatorname{popcount}(s)=t\)</span> 的
+<span class="math inline">\(s\)</span>
+中，每种路径的异或和分别有多少个即可。</p>
+<p>枚举 <span class="math inline">\(s_1\)</span>，设 <span
+class="math inline">\(p\)</span> 为最终到达的位置，<span
+class="math inline">\(z\)</span> 为路径的异或和，那么每次只要查询 <span
+class="math inline">\(t=(n-1)-\operatorname{popcount}(s_1)\)</span> 的
+<span class="math inline">\(s_2\)</span> 中，有多少个路径的 <span
+class="math inline">\(\operatorname{xor}\)</span> 和为 <span
+class="math inline">\(k\operatorname
+{xor}a_p\operatorname{xor}z\)</span>。</p>
+<h3 id="代码">代码</h3>
+<div class="panel-body"><pre class="sh_sourceCode"><code class="sh_cpp">/*
+ * Copyright© 2024 Heratino &amp; Nelofus. All rights reserved.
+ * author: Heratino &amp; Nelofus
+ * Problem: CF1006F. Xor-Paths
+ * Tag: Meet-in-the-middle; 状态压缩 DP
+ * Memory Limit: 256MB
+ * Time Limit: 3000ms
+ * Source: Codeforces Round 498 (Div. 3)
+ * Date: 2024-03-14 
+ */
+
+// Narcissus &amp; どうか安寧な記憶を
+
+#include &lt;bits/stdc++.h&gt;
+using i64 = long long;
+
+constexpr int N = 20;
+i64 a[N][N];
+i64 k;
+int n, m;
+std::map&lt;i64, int&gt; cnt[N];
+
+/* 无法忘却的记忆与苍蓝之梦 */
+int main() {
+#ifdef HeratinoNelofus
+	freopen(&quot;input.txt&quot;, &quot;r&quot;, stdin);
+#endif
+	std::ios::sync_with_stdio(false);
+	std::cin.tie(nullptr);
+
+	std::cin &gt;&gt; n &gt;&gt; m &gt;&gt; k;	
+	for (int i = 0; i &lt; n; i++)
+		for (int j = 0; j &lt; m; j++)
+			std::cin &gt;&gt; a[i][j];
+	if (n &gt; m) {
+		for (int i = 0; i &lt; N; i++)
+			for (int j = 0; j &lt;= i; j++)
+				std::swap(a[i][j], a[j][i]);
+		std::swap(n, m);
+	}
+
+	/* 后 m - 1 次移动 */
+	for (int s = 0; s &lt; (1 &lt;&lt; (m - 1)); s++) {
+		if (__builtin_popcount(s) &gt; n - 1)
+			continue;
+		i64 xorsum = 0;
+		int x = n - 1, y = m - 1;
+		for (int i = 0; i &lt; m - 1; i++) {
+			xorsum ^= a[x][y];
+			if (((s &gt;&gt; i) &amp; 1) == 0)
+				y--;
+			else
+				x--;
+		}
+		cnt[__builtin_popcount(s)][xorsum] += 1;
+	}
+
+	/* 前 n - 1 次移动 */
+	i64 ans = 0;
+	for (int s = 0; s &lt; (1 &lt;&lt; (n - 1)); s++) {
+		if (__builtin_popcount(s) &gt; n - 1)
+			continue;
+		i64 xorsum = 0;
+		int x = 0, y = 0;
+		for (int i = 0; i &lt; n - 1; i++) {
+			xorsum ^= a[x][y];
+			if (((s &gt;&gt; i) &amp; 1) == 0)
+				y++;
+			else
+				x++;
+		}
+		ans += cnt[(n - 1) - __builtin_popcount(s)][k ^ xorsum ^ a[x][y]];
+	}
+	std::cout &lt;&lt; ans &lt;&lt; &#x27;\n&#x27;;
+	return 0;
+}
+
+</code><script>syntax_highlight()</script>
+</pre></div>
+<h3 id="坑">坑</h3>
+<ol type="1">
+<li>CF 编译器要用 <code>__builtin_popcount</code>。</li>
+</ol>
+</body>
+</html>
