@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+
+<head>
+	<meta charset="utf-8">
+	<link type="text/css" rel="stylesheet" href="../additional_files/css/bootstrap.min.css">
+	<link type="text/css" rel="stylesheet" href="../additional_files/css/sh_typical.min.css">
+	<title>cf576D</title>
+	<script src="../additional_files/js/sh_main.min.js"></script>
+	<script src="../additional_files/MathJax-master/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</head>
+<body>
+<h3 id="题目描述">题目描述</h3>
+<p>给出一张 <span class="math inline">\(n\)</span> 个点 <span
+class="math inline">\(m\)</span> 条边的有向图，试求 <span
+class="math inline">\(1\)</span> 号节点到 <span
+class="math inline">\(n\)</span> 号节点的最短路，或判断无法到达。</p>
+<p>对于每条边 <span class="math inline">\(i\)</span>，有一个参数 <span
+class="math inline">\(d_i\)</span>，表示你只有在至少走过了 <span
+class="math inline">\(d_i\)</span> 条边后才能使用这条边。</p>
+<h3 id="数据范围">数据范围</h3>
+<p><span class="math inline">\(1\le n,m\le 150, 1\le d_i\le
+10^9\)</span></p>
+<h3 id="题解">题解</h3>
+<p>有两种处理方式供我们可选：</p>
+<ol type="1">
+<li>在最短路的转移中尝试带上 <span class="math inline">\(d_i\)</span>
+的限制。</li>
+<li>先消却 <span class="math inline">\(d_i\)</span>
+的限制，再处理最短路。</li>
+</ol>
+<p>比起方法 <span class="math inline">\(1\)</span>，显然方法 <span
+class="math inline">\(2\)</span> 更加好处理。</p>
+<p>把所有边按 <span class="math inline">\(d_i\)</span>
+的权值排序，那么每个时刻能够使用的边就是一段前缀。</p>
+<p>枚举 <span class="math inline">\(k\)</span>，考虑只使用 <span
+class="math inline">\([1,k]\)</span>
+这一段前缀的边，想要这些边都能用，那么时刻至少为 <span
+class="math inline">\(d_k\)</span> 。那么，求出恰好走 <span
+class="math inline">\(d_k\)</span> 条边后可能在的位置集合，记为 <span
+class="math inline">\(S\)</span>，以 <span
+class="math inline">\(S\)</span> 为起点 BFS，只走 <span
+class="math inline">\(1\sim k\)</span> 这些边时到 <span
+class="math inline">\(t\)</span> 的最短路即可。</p>
+<p>这个问题可以用矩阵乘法解决。具体地，维护一条可能出现的位置的行向量 $v
+$，第 <span class="math inline">\(k-1\)</span>
+个时刻，可以走的边邻接矩阵为 <span
+class="math inline">\(T\)</span>，那么只要 <span class="math display">\[
+\boldsymbol v\leftarrow \boldsymbol v\times T^{d_k-d_{k-1}}
+\]</span> 同时，向量与矩阵中都只有 <span
+class="math inline">\(0,1\)</span> 两个值，而且是 <span
+class="math inline">\((\operatorname{or},\operatorname{and})\)</span>
+矩阵乘法，可以用 <code>std::bitset</code> 优化，复杂度是 <span
+class="math inline">\(\mathcal O(\frac{n^3m\log
+d}{w})\)</span>。再加上最短路的复杂度，总复杂度为 <span
+class="math inline">\(\mathcal O(\frac{n^3m\log d}{w}+m(n+m))\)</span>
+<span class="math display">\[
+A_{i,j}=\operatorname{or}_{k=1}^{n}(B_{i,k}\operatorname{and}C_{k,j})
+\]</span> 另外 <span
+class="math inline">\((\operatorname{or},\operatorname{and})\)</span>
+矩阵乘法的单位元和 <span class="math inline">\((+,*)\)</span>
+矩阵乘法一样。但是也可以通过直接把向量乘上去规避掉单位元。</p>
+<h3 id="代码">代码</h3>
+<div class="panel-body"><pre class="sh_sourceCode"><code class="sh_cpp">/*
+ * Copyright© 2024 Heratino &amp; Nelofus. All rights reserved.
+ * author: Heratino &amp; Nelofus
+ * Problem: CF576D. Flights for Regular Customers
+ * Tag: 最短路, bitset, 矩阵快速幂
+ * Memory Limit: 256MB
+ * Time Limit: 4000ms
+ * Source: Codeforces Round 319 (Div. 1)
+ * Date: 2024-03-13 
+ */
+
+// Narcissus &amp; どうか安寧な記憶を
+
+#include &lt;bits/stdc++.h&gt;
+using i64 = long long;
+
+constexpr int N = 151;
+
+struct edge {
+	int u, v, d;
+	bool operator &lt; (const edge &amp;t) {
+		return d &lt; t.d;
+	}
+} ste[N];
+
+struct matrix {
+	std::bitset&lt;N&gt; mat[N];
+	matrix T() {
+		matrix ans;
+		for (int i = 0; i &lt; N; i++)
+			for (int j = 0; j &lt; N; j++)
+				ans.mat[i][j] = mat[j][i];
+		return ans;
+	}
+	matrix operator * (matrix B) {
+		matrix C;
+		B = B.T();
+		for (int i = 0; i &lt; N; i++) {
+			for (int j = 0; j &lt; N; j++) {
+				if ((mat[i] &amp; B.mat[j]).any())
+					C.mat[i][j] = 1;
+				else
+					C.mat[i][j] = 0;
+			}
+		}
+		return C;
+	}
+};
+std::basic_string&lt;int&gt; G[N];
+int n, m;
+std::bitset&lt;N&gt; vec;
+
+inline void mul(std::bitset&lt;N&gt; &amp;t, matrix A) {
+	A = A.T();
+	static std::bitset&lt;N&gt; a;
+	a.reset();
+	for (int i = 0; i &lt; N; i++)
+		a[i] = (t &amp; A.mat[i]).any();
+	t = a;
+}
+
+inline void f_pow(std::bitset&lt;N&gt; &amp;t, matrix A, int k) {
+	for (; k; k &gt;&gt;= 1, A = A * A)
+		if (k &amp; 1)
+			mul(t, A);
+}
+
+matrix graph;
+int dis[N];
+bool vis[N];
+void bfs() {
+	memset(vis, 0, sizeof(vis));
+	for (int i = 0; i &lt; N; i++)
+		dis[i] = 1e9;
+	std::queue&lt;int&gt; q;
+	for (int i = 1; i &lt;= n; i++)
+		if (vec[i]) {
+			q.push(i), dis[i] = 0;
+		}
+	while (!q.empty()) {
+		int u = q.front();
+		q.pop();
+		if (vis[u])
+			continue;
+		vis[u] = true;
+		for (const int &amp;v : G[u]) {
+			if (dis[v] &gt; dis[u] + 1) {
+				dis[v] = dis[u] + 1;
+				q.push(v);
+			}
+		}
+	}
+}
+
+/* 无法忘却的记忆与苍蓝之梦 */
+int main() {
+#ifdef HeratinoNelofus
+	freopen(&quot;input.txt&quot;, &quot;r&quot;, stdin);
+#endif
+	std::ios::sync_with_stdio(false);
+	std::cin.tie(nullptr);
+
+	std::cin &gt;&gt; n &gt;&gt; m;	
+	for (int i = 1; i &lt;= m; i++) {
+		auto &amp;[u, v, d] = ste[i];
+		std::cin &gt;&gt; u &gt;&gt; v &gt;&gt; d;
+	}
+	std::sort(ste + 1, ste + 1 + m);
+	vec[1] = 1;
+	int ans = 2e9;
+	for (int i = 1; i &lt;= m; i++) {
+		f_pow(vec, graph, ste[i].d - ste[i - 1].d);
+		G[ste[i].u] += ste[i].v;
+		bfs();
+		if (dis[n] != (int)1e9)
+			ans = std::min(ans, dis[n] + ste[i].d);
+		graph.mat[ste[i].u][ste[i].v] = 1;
+	}
+	if (ans &gt;= 2e9)
+		std::cout &lt;&lt; &quot;Impossible&quot; &lt;&lt; &#x27;\n&#x27;;
+	else
+		std::cout &lt;&lt; ans &lt;&lt; &#x27;\n&#x27;;
+	return 0;
+}
+
+</code><script>syntax_highlight()</script>
+</pre></div>
+
+</body>
+</html>

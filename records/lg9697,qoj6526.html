@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+
+<head>
+	<meta charset="utf-8">
+	<link type="text/css" rel="stylesheet" href="../additional_files/css/bootstrap.min.css">
+	<link type="text/css" rel="stylesheet" href="../additional_files/css/sh_typical.min.css">
+	<title>lg9697,qoj6526</title>
+	<script src="../additional_files/js/sh_main.min.js"></script>
+	<script src="../additional_files/MathJax-master/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</head>
+<body>
+<h3 id="题目描述">题目描述</h3>
+<p>有一个长度为 <span class="math inline">\(n\)</span>
+的序列，一开始序列中的所有元素均为 <span
+class="math inline">\(0\)</span>。另外还有 <span
+class="math inline">\(m\)</span> 个操作，其中第 <span
+class="math inline">\(i\)</span> 个操作会将序列中第 <span
+class="math inline">\(l_i\)</span> 个元素的值改为 <span
+class="math inline">\(x_i\)</span>，以及将序列中第 <span
+class="math inline">\(r_i\)</span> 个元素的值改为 <span
+class="math inline">\(y_i\)</span>。每个操作必须恰好执行一次。</p>
+<p>求执行操作的最优顺序，使得所有操作执行完成后，序列中所有元素之和最大。</p>
+<h3 id="输入格式">输入格式</h3>
+<p>有多组测试数据。第一行输入一个整数 <span
+class="math inline">\(T\)</span>
+表示测试数据组数。对于每组测试数据：</p>
+<p>第一行输入两个整数 <span class="math inline">\(n\)</span> 和 <span
+class="math inline">\(m\)</span>（<span class="math inline">\(2 \leq n,
+m \leq 5 \times 10^5\)</span>）表示序列的长度和操作的个数。</p>
+<p>对于接下来 <span class="math inline">\(m\)</span> 行，第 <span
+class="math inline">\(i\)</span> 行输入四个整数 <span
+class="math inline">\(l_i\)</span>，<span
+class="math inline">\(x_i\)</span>，<span
+class="math inline">\(r_i\)</span> 和 <span
+class="math inline">\(y_i\)</span>（<span class="math inline">\(1 \leq
+l_i&lt;r_i \leq n\)</span>，<span class="math inline">\(1 \leq x_i,y_i
+\leq 2\)</span>）表示第 <span class="math inline">\(i\)</span>
+个操作。</p>
+<p>保证所有数据 <span class="math inline">\(n\)</span> 之和与 <span
+class="math inline">\(m\)</span> 之和均不超过 <span
+class="math inline">\(5 \times 10^5\)</span>。</p>
+<h3 id="输出格式">输出格式</h3>
+<p>每组数据首先输出一行一个整数，表示执行操作后，所有元素的最大和。接下来输出一行
+<span class="math inline">\(m\)</span> 个由单个空格分隔的整数 <span
+class="math inline">\(a_1, a_2, \cdots, a_m\)</span>
+表示执行操作的最优顺序，其中 <span class="math inline">\(a_i\)</span>
+表示第 <span class="math inline">\(i\)</span> 次执行的操作的编号。从
+<span class="math inline">\(1\)</span> 到 <span
+class="math inline">\(m\)</span>
+的每个整数（含两端）必须恰好出现一次。若有多种合法答案，您可以输出任意一种。</p>
+<h3 id="题解">题解</h3>
+<p>涂色首先考虑时光倒流。</p>
+<p>那么我们一定会先做所有两个都是 <span class="math inline">\(2\)</span>
+的操作，最后做两个都是 <span class="math inline">\(1\)</span>
+的操作。</p>
+<p>考虑一个 <span class="math inline">\(1\)</span> 一个 <span
+class="math inline">\(2\)</span> 的操作怎么做，我们假设 <span
+class="math inline">\(1\)</span> 的点是 <span
+class="math inline">\(x\)</span>，<span class="math inline">\(2\)</span>
+的点是 <span
+class="math inline">\(y\)</span>，这种类似相互约束的东西不难考虑到到建图。</p>
+<p>那么连一条 <span class="math inline">\(x\rightarrow y\)</span>
+的边，不难发现对于每个强连通分量，至多一个点会是 <span
+class="math inline">\(1\)</span>，并且有 <span
+class="math inline">\(1\)</span> 的强连通分量在缩点后入度为 <span
+class="math inline">\(0\)</span>。</p>
+<p>那么先把已经确定是 <span class="math inline">\(2\)</span>
+的点加入进来，再考虑所有入度为 <span class="math inline">\(0\)</span>
+的强联通分量，如果里面没有已经确定的点，那么随便选一个点加入。</p>
+<p>用 BFS 即可确定询问的顺序。</p>
+<h3 id="代码">代码</h3>
+<p>不建议参考。</p>
+<div class="panel-body"><pre class="sh_sourceCode"><code class="sh_cpp">/*
+ * Copyright© 2024 Heratino &amp; Nelofus. All rights reserved.
+ * author: Heratino &amp; Nelofus
+ * Problem: 
+ * Tag: 
+ * Memory Limit: 
+ * Time Limit: 
+ * Source: 
+ */
+
+// Narcissus &amp; どうか安寧な記憶を
+
+#include &lt;bits/stdc++.h&gt;
+using i64 = long long;
+
+constexpr int N = 5e5 + 10;
+struct operators {
+	int l, r, x, y;
+	int type;
+	int id;
+} qry[N];
+int n, m;
+int dfn[N], low[N], dfc, sn;
+int number[N];
+bool instk[N];
+int stk[N], tt;
+std::vector&lt;int&gt; scc[N];
+std::vector&lt;operators&gt; edg[N];
+std::basic_string&lt;int&gt; G[N];
+
+void dfs(int u) {
+	dfn[u] = low[u] = ++dfc;
+	stk[++tt] = u;
+	instk[u] = true;
+	for (const int &amp;v : G[u]) {
+		if (!dfn[v]) {
+			dfs(v);
+			low[u] = std::min(low[u], low[v]);
+		} else if (instk[v]) {
+			low[u] = std::min(low[u], dfn[v]);
+		}
+	}
+	if (dfn[u] == low[u]) {
+		sn++;
+		while (stk[tt] != u) {
+			instk[stk[tt]] = false;
+			number[stk[tt]] = sn;
+			scc[sn].push_back(stk[tt--]);
+		}
+		instk[stk[tt]] = false;
+		number[stk[tt]] = sn;
+		scc[sn].push_back(stk[tt--]);
+	}
+}
+
+void tarjan() {
+	for (int i = 1; i &lt;= n; i++)
+		if (!dfn[i])
+			dfs(i);
+}
+
+/*
+ * 答案序列
+ * 缩点后出度
+ * 强连通分量是否有关键点
+ * 询问是否已经被加入答案序列
+ * 在 bfs 中的 vis
+ */
+int ans[N];
+int otd[N];
+int has[N];
+int ard[N];
+int vis[N];
+std::vector&lt;std::pair&lt;int, int&gt;&gt; G2[N];
+
+int tot;
+operators qans[N];
+void clear(int n, int m) {
+	for (int i = 1; i &lt;= n; i++)	G[i].clear(), G2[i].clear();
+	for (int i = 1; i &lt;= sn; i++)	scc[i].clear();
+	memset(dfn + 1, 0, n * sizeof(int));
+	memset(low + 1, 0, n * sizeof(int));
+	memset(ans + 1, 0, n * sizeof(int));
+	memset(otd + 1, 0, n * sizeof(int));
+	memset(has + 1, 0, n * sizeof(int));
+	memset(ard + 1, 0, m * sizeof(int));
+	memset(vis + 1, 0, n * sizeof(int));
+	dfc = 0, sn = 0, tot = 0;
+}
+
+inline void add(int u, int v) {G[u] += v;}
+
+void bfs() {
+	for (int u = 1; u &lt;= n; u++)
+		for (const int &amp;v : G[u]) {
+			if (number[u] != number[v]) {
+				otd[number[u]]++;
+			}
+		}
+
+	std::queue&lt;int&gt; q;
+	for (int i = 1; i &lt;= m; i++) {
+		auto &amp;[l, r, x, y, type, id] = qry[i];
+		if (x == 1 &amp;&amp; y == 2)
+			G2[l].emplace_back(r, id);
+		if (x == 2 &amp;&amp; y == 1)
+			G2[r].emplace_back(l, id);
+		if (x == 2 &amp;&amp; y == 2) {
+			q.push(l);
+			q.push(r);
+			qans[++tot] = qry[i];
+			has[number[l]] = 1;
+			has[number[r]] = 1;
+			ard[id] = 1;
+		}
+	}
+	for (int i = 1; i &lt;= sn; i++)
+		if (otd[i] == 0 &amp;&amp; !has[i]) {
+			q.push(scc[i][0]);
+			has[i] = 1;
+		}
+	while (!q.empty()) {
+		int u = q.front();
+		q.pop();
+		if (vis[u])
+			continue;
+		vis[u] = 1;
+		for (const auto &amp;[v, qryid] : G2[u]) {
+			if (!ard[qryid]) {
+				ard[qryid] = 1, q.push(v);
+				qans[++tot] = qry[qryid];
+			}
+		}
+	}
+	for (int i = 1; i &lt;= m; i++) {
+		auto &amp;[l, r, x, y, type, id] = qry[i];
+		if (x == 1 &amp;&amp; y == 1)
+			qans[++tot] = qry[i];
+	}
+}
+
+void solve() {
+	std::cin &gt;&gt; n &gt;&gt; m;
+	clear(n, m);
+	for (int i = 1; i &lt;= m; i++) {
+		auto &amp;[l, r, x, y, type, id] = qry[i];
+		std::cin &gt;&gt; l &gt;&gt; x &gt;&gt; r &gt;&gt; y;
+		if (x == 1 &amp;&amp; y == 1)
+			type = 0;
+		else if (x == 2 &amp;&amp; y == 2)
+			type = 2;
+		else
+			type = 1;
+		id = i;
+	}
+
+	for (int i = 1; i &lt;= m; i++) {
+		auto &amp;[l, r, x, y, type, id] = qry[i];
+		if (x == 1 &amp;&amp; y == 2)
+			add(r, l);
+		if (x == 2 &amp;&amp; y == 1)
+			add(l, r);
+	}
+
+	tarjan();
+	bfs();
+
+	for (int i = 1; i &lt;= m; i++) {
+		auto &amp;[l, r, x, y, type, id] = qans[i];
+		if (ans[l] == 0)
+			ans[l] = x;
+		if (ans[r] == 0)
+			ans[r] = y;
+	}
+	int res = 0;
+	for (int i = 1; i &lt;= n; i++)
+		res += ans[i];
+	std::cout &lt;&lt; res &lt;&lt; &#x27;\n&#x27;;
+	// 正序输出
+	for (int i = m; i &gt;= 1; i--)
+		std::cout &lt;&lt; qans[i].id &lt;&lt; &quot; \n&quot;[i == 1];
+}
+
+/* 无法忘却的记忆与苍蓝之梦 */
+int main() {
+#ifdef HeratinoNelofus
+	freopen(&quot;input.txt&quot;, &quot;r&quot;, stdin);
+#endif
+	std::ios::sync_with_stdio(false);
+	std::cin.tie(nullptr);
+
+	int T;
+	std::cin &gt;&gt; T;
+	while (T--) {
+		solve();
+	}
+	return 0;
+}
+
+</code><script>syntax_highlight()</script>
+</pre></div>
+
+</body>
+</html>
