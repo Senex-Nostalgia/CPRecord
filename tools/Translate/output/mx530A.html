@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+
+<head>
+	<meta charset="utf-8">
+	<link type="text/css" rel="stylesheet" href="../additional_files/css/bootstrap.min.css">
+	<link type="text/css" rel="stylesheet" href="../additional_files/css/sh_typical.min.css">
+	<title>mx530A</title>
+	<script src="../additional_files/js/sh_main.min.js"></script>
+	<script src="../additional_files/MathJax-master/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</head>
+<body>
+<h3 id="题目描述">题目描述</h3>
+<p>给定一个长度为 <span class="math inline">\(n\)</span> 的序列 <span
+class="math inline">\(\{a_i\}\)</span>，定义一个区间 <span
+class="math inline">\([l,r]\)</span> 的权值 <span
+class="math inline">\(f(l,r)\)</span>
+为按以下步骤产生的所有可能的答案的最大值。</p>
+<ol type="1">
+<li>令 <span class="math inline">\(S\)</span> 为 <span
+class="math inline">\(\{a_i\}\)</span> 的区间 <span
+class="math inline">\([l,r]\)</span> 中的数的集合（可重），<span
+class="math inline">\(r=0\)</span>。</li>
+<li>每次取出 <span class="math inline">\(S\)</span> 中的一个数，记为
+<span class="math inline">\(t\)</span>，令 <span
+class="math inline">\(r\leftarrow \dfrac{r+t}{2}\)</span>，重复直到
+<span class="math inline">\(S\)</span> 为空集。</li>
+<li>所得 <span class="math inline">\(r\)</span> 即为答案。</li>
+</ol>
+<p>求 <span class="math inline">\(\displaystyle \sum_{1\le l\le r\le
+n}\frac{f(l,r)}{n^2}\)</span>
+，你的答案被认为是正确的当且仅当与答案绝对误差或相对误差不超过 <span
+class="math inline">\(10^{-2}\)</span>。</p>
+<h3 id="输入格式">输入格式</h3>
+<p>第一行一个正整数 <span class="math inline">\(n\)</span>
+表示序列长度。</p>
+<p>第二行 <span class="math inline">\(n\)</span> 个正整数表示序列 <span
+class="math inline">\(\{a_i\}\)</span>。</p>
+<h3 id="输出格式">输出格式</h3>
+<p>一行一个小数表示你的答案。</p>
+<h3 id="题解">题解</h3>
+<p>考虑一个区间的权值是什么，这相当于找到长度为 <span
+class="math inline">\(r-l+1\)</span> 的一个排列 <span
+class="math inline">\(p\)</span>，使得 <span class="math display">\[
+\sum_{i=1}^{r-l+1}\dfrac{s_i}{2^{p_i}}
+\]</span> 最大。显然，对于小的 <span class="math inline">\(s\)</span>
+我们会给他分配大的 <span class="math inline">\(p\)</span>。</p>
+<p>考虑到精度问题，不难发现我们只需要保留前 $$ 大即可计算答案。</p>
+<p>不妨假设第 <span class="math inline">\(i\)</span>
+个数前面比他大的数的下标<strong>从大到小</strong>分别为 <span
+class="math inline">\(l_1,l_2,\cdots
+,l_k\)</span>，而后面比他大的数的下标<strong>从小到大</strong>分别为
+<span class="math inline">\(r_1,r_2,\cdots, r_k\)</span>，而 <span
+class="math inline">\(l_0=r_0=i\)</span>，那么这个数的贡献就是 <span
+class="math display">\[
+2a_i\times
+\left(\sum_{j=1}^{k}\frac{l_{j-1}-l_j}{2^{j}}\right)\left(\sum_{j=1}^{k}\frac{r_j-r_{j-1}}{2^j}\right)
+\]</span> 我们从小到大枚举所有的数，要做的事情就是：</p>
+<ul>
+<li>找到一个下标的前驱</li>
+<li>删除一个下标</li>
+</ul>
+<p>用链表维护每个下标的前驱和后继即可。</p>
+<h3 id="代码">代码</h3>
+<div class="panel-body"><pre class="sh_sourceCode"><code class="sh_cpp">#include &lt;bits/stdc++.h&gt;
+using i64 = long long;
+using f64 = double;
+
+constexpr int N = 1e6 + 10;
+constexpr int M = 30;
+int n;
+int a[N];
+std::pair&lt;int, int&gt; pr[N];
+int lft[N], rgt[N];
+i64 pw[M + 1];
+
+int main() {
+#ifdef HeratinoNelofus
+	freopen(&quot;input.txt&quot;, &quot;r&quot;, stdin);
+#else
+	freopen(&quot;drink.in&quot;, &quot;r&quot;, stdin);
+	freopen(&quot;drink.out&quot;, &quot;w&quot;, stdout);
+#endif
+	std::ios::sync_with_stdio(false);
+	std::cin.tie(nullptr);
+
+	std::cin &gt;&gt; n;
+	pw[0] = 1;
+	for (int i = 1; i &lt; M; i++)
+		pw[i] = pw[i - 1] * 2;
+
+	for (int i = 1; i &lt;= n; i++) {
+		std::cin &gt;&gt; a[i];
+		pr[i] = std::make_pair(a[i], i);
+	}
+	for (int i = 0; i &lt;= n + 1; i++)
+		lft[i] = i - 1, rgt[i] = i + 1;
+	std::sort(pr + 1, pr + 1 + n);
+
+	f64 ans = 0;
+
+	for (int i = 1; i &lt;= n; i++) {
+		f64 sum1 = 0;
+		f64 sum2 = 0;
+		int t1 = M, t2 = M;
+		int p1 = pr[i].second, p2 = pr[i].second;
+		static std::vector&lt;int&gt; vec1, vec2;
+		vec1.clear(), vec2.clear();
+		while(t1--) {
+			vec1.push_back(p1);
+			if (!p1)
+				break;
+			p1 = lft[p1];
+		}
+		while (t2--) {
+			vec2.push_back(p2);
+			if (p2 == n + 1)
+				break;
+			p2 = rgt[p2];
+		}
+		for (int j = 0; j + 1 &lt; vec1.size(); j++) {
+			sum1 += (f64)(vec1[j] - vec1[j + 1]) / pw[j + 1];
+		}
+		for (int j = 0; j + 1 &lt; vec2.size(); j++) {
+			sum2 += (f64)(vec2[j + 1] - vec2[j]) / pw[j + 1];
+		}
+		ans += 2 * pr[i].first * sum1 * sum2;
+		// 删掉当前这个点
+		rgt[lft[pr[i].second]] = rgt[pr[i].second];
+		lft[rgt[pr[i].second]] = lft[pr[i].second];
+	}
+	std::cout &lt;&lt; std::fixed &lt;&lt; std::setprecision(10) &lt;&lt; ans / n / n &lt;&lt; &#x27;\n&#x27;;
+	return 0;
+}
+
+
+</code><script>syntax_highlight()</script>
+</pre></div>
+
+</body>
+</html>

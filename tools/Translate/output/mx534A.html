@@ -1,4 +1,37 @@
-// 水仙之爱绽于何方?
+<!DOCTYPE html>
+<html lang="zh-cn">
+
+<head>
+	<meta charset="utf-8">
+	<link type="text/css" rel="stylesheet" href="../additional_files/css/bootstrap.min.css">
+	<link type="text/css" rel="stylesheet" href="../additional_files/css/sh_typical.min.css">
+	<title>mx534A</title>
+	<script src="../additional_files/js/sh_main.min.js"></script>
+	<script src="../additional_files/MathJax-master/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</head>
+<body>
+<h3 id="题目描述">题目描述</h3>
+<p>平面上有 <span class="math inline">\(n\)</span> 个点和 <span
+class="math inline">\(m\)</span>
+个圆，没有一个点在圆之间，也没有一对点的连线恰好与圆相切，若点 <span
+class="math inline">\(u\)</span> 与点 <span
+class="math inline">\(v\)</span>
+连成的线段不经过任何一个圆，那么在这两个点之间连一条边，求形成的图联通块的数量。
+输出答案 <span class="math inline">\(-1\)</span>， <span
+class="math inline">\(n,m\le 1000\)</span>。</p>
+<h3 id="题解">题解</h3>
+<p>固定一个端点，考虑如何判定其他点 <span
+class="math inline">\(v\)</span> 是否能够到达 <span
+class="math inline">\(u\)</span> 。</p>
+<p>如果只存在一个圆，如果点 <span class="math inline">\(v\)</span> 与点
+<span class="math inline">\(u\)</span> 的连线经过圆，那么在靠近 <span
+class="math inline">\(u\)</span> 的那一侧可行，否则不可行。</p>
+<p>更形式化的说，要在 <span class="math inline">\(u\)</span>
+到圆的两条切线组成的扇形之中。</p>
+<p>把所有切线拿出来按极角排序，按旋转一周的顺序遍历。每次进入一个扇形就将这个扇形的半径（点到切点距离）加入，离开扇形就删除。每次判定
+<span class="math inline">\(v\)</span> 到 <span
+class="math inline">\(u\)</span> 的距离是否比最小的扇形半径更小。</p>
+<div class="panel-body"><pre class="sh_sourceCode"><code class="sh_cpp">// 水仙之爱绽于何方?
 #include &lt;bits/stdc++.h&gt;
 
 using f64 = double;
@@ -323,3 +356,13 @@ int main() {
 	output &lt;&lt; ans - 1 &lt;&lt; &#x27;\n&#x27;;
 	return 0;
 }
+
+</code><script>syntax_highlight()</script>
+</pre></div>
+<h3 id="坑点">坑点</h3>
+<ol type="1">
+<li>注意每个圆极角小的切线和极角大的切线分别在 <span
+class="math inline">\((-eps, eps)\)</span> 范围的时候行为不能一样。</li>
+</ol>
+</body>
+</html>

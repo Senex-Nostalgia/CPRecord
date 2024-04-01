@@ -10,6 +10,7 @@
 			'(Encrypted)' : ['ENCRYPTED', '加密', '加密题解', '加密文档', '加密BLOG', '加密博客'],
 			'Abelian 群' : ['ABEL群', '阿贝尔群', '交换群'],
 			'构造' : [],
+			'链表' : [],
 			'Aho-Corasick 自动机' : ['AC自动机'],
 			'Anti Sprague-Grundy 定理(SJ 定理)' : ['SJ定理'],
 			'BEST 定理' : [],

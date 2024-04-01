@@ -24,7 +24,7 @@ def TranslateMarkdownToHtml(inputname, outputname, tmp, name):
 	obj = open(inputname, "r", encoding='utf-8')
 	blocksCount = 0
 	type = []
-	article = obj.readlines();
+	article = obj.readlines()
 	fempty = True
 
 	Cfile = open(os.path.join(tmp, str(blocksCount) + ".md"), "w", encoding='utf-8')
